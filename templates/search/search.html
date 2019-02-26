@@ -1,0 +1,57 @@
+{% extends '../nav.html' %}
+
+{% block content %}
+<div class="ui middle aligned center aligned grid">
+  <div class="column">
+    <h2 class="ui image header">
+      <div class="content">
+        Search for Current Study Space on Campus
+      </div>
+    </h2>
+    <form action="#" method="get" class="ui large form">
+      <div class="ui stacked secondary  segment">
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="location arrow icon"></i>
+            <input type="text" name="location" placeholder="Current Location">
+          </div>
+        </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="users icon"></i>
+            <input type="number" name="groupSize" placeholder="Number of People in Your Group">
+          </div>
+        </div>
+        <div class="field">
+            <select class="ui dropdown">
+              <option value="">Select Enviroment</option>
+              <option value="2">Quiet Open Study</option>
+              <option value="1">Quiet Closed Study</option>
+              <option value="0">Group Study</option>
+            </select>
+        </div>
+          <div class = "field">
+              Select Date and Time
+              <div class="two fields">
+                  <div class="field">
+                      <div class="ui left icon input">
+                        <i class="calendar alternate icon"></i>
+                        <input type="date" name="forDate">
+                      </div>
+                  </div>
+                  <div class="field">
+                      <div class="ui left icon input">
+                        <i class="clock icon"></i>
+                        <input type="time" name="forTime">
+                      </div>
+                  </div>
+              </div>
+          </div>
+      <div class="ui fluid large teal submit button">Search</div>
+
+      <div class="ui error message"></div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

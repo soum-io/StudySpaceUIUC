@@ -1,0 +1,21 @@
+body > .grid {
+  height: 100%;
+}
+
+.image {
+  margin-top: -100px;
+}
+.column {
+  max-width: 450px;
+}
+
+.bg-image {
+    background: url("/static/img/grainger.jpg");
+    /* Full height */
+    height: 100%;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: 1;
+}
