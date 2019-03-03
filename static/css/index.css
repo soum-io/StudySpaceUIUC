@@ -1,6 +1,3 @@
-body > .grid {
-  height: 100%;
-}
 
 .image {
   margin-top: -100px;
@@ -18,4 +15,119 @@ body > .grid {
     background-repeat: no-repeat;
     background-size: cover;
     z-index: 1;
+}
+
+/* Remove all margins to make window properly fit the contents */
+body {
+	height:	100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size:cover;
+}
+
+#library_content{
+	margin-top: 50px;
+}
+
+#Result_title{
+	margin-left: 10px;
+	font-size: 24pt;
+	font-family: "Times New Roman", Times, serif;
+}
+
+#Result_column{
+	background-color: #5893D4;
+	background: linear-gradient(to bottom right, white, transparent 50%);
+}
+
+#Filter_row{
+	margin-bottom: 13px;
+	height:10px;
+}
+
+#Filter_label{
+	margin-left: 20px;
+}
+
+#Content_row{
+	margin-top: 0px;
+}
+
+#ListOfSpace{
+	height:400px;
+	width: 920px;
+	overflow: auto;
+}
+
+
+#List_accordion{
+	width: 100%;
+	background-color: #F8EEB4;
+}
+
+#List_accordion_Side{
+	width: 100%;
+	background-color: #FfE6EB;
+
+}
+
+#Library_card{
+	width: 100%;
+	background-color: #F6E5E5;
+	height:180px;
+}
+
+#Library_image{
+	max-width: 80%;
+	margin-top: 10px;
+	margin-left: 10px;
+}
+
+#Sidebar{
+	height:390px;
+	width: 100%;
+	overflow: auto;
+}
+
+#Sidebar_image{
+	max-width: 100%;
+}
+
+#Siderbar_text{
+	font-size: 9pt;
+}
+
+#Siderbar_card{
+	width: 100%;
+}
+
+#LibraryNameText{
+	margin-top: 20px;
+	font-size: 18pt;
+}
+
+#Reserve_button{
+	width: 50%;
+}
+
+#Rating_column{
+	margin-top: 10px;
+}
+
+#NumOfResults{
+	font-size: 13pt;
+	font-family: "Times New Roman", Times, serif;
+
+}
+
+#Library_info{
+	margin-top: 10px;
+}
+
+#Info_subtitles{
+	font-size:13pt;
+}
+
+#Search_button{
+	font-weight: bold;
 }
