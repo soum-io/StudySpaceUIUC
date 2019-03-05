@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="ui middle aligned center aligned grid">
-  <div class="column">
+  <div class="column smudge">
     <h2 class="ui image header">
       <div class="content">
         Search for Current Study Space on Campus
@@ -13,7 +13,7 @@
         <div class="field">
           <div class="ui left icon input">
             <i class="location arrow icon"></i>
-            <input type="text" name="location" placeholder="Current Location">
+            <input type="text" id="location_autocomplete" name="location" placeholder="Current Location">
           </div>
         </div>
         <div class="field">
@@ -36,13 +36,13 @@
                   <div class="field">
                       <div class="ui left icon input">
                         <i class="calendar alternate icon"></i>
-                        <input type="date" name="forDate">
+                        <input type="text" id="datepicker" placeholder="Select Date" name="forDate">
                       </div>
                   </div>
                   <div class="field">
                       <div class="ui left icon input">
                         <i class="clock icon"></i>
-                        <input type="time" name="forTime">
+                        <input type="text" id="timepicker" placeholder="Select Time" name="forTime">
                       </div>
                   </div>
               </div>

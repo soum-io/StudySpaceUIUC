@@ -1,9 +1,6 @@
 
-.image {
-  margin-top: -100px;
-}
-.column {
-  max-width: 450px;
+.smudge {
+  max-width: 600px;
 }
 
 .bg-image {
@@ -17,6 +14,10 @@
     z-index: 1;
 }
 
+.ui.menu:first-child {
+    margin-bottom: 8%;
+}
+
 /* Remove all margins to make window properly fit the contents */
 body {
 	height:	100%;
@@ -26,7 +27,7 @@ body {
 }
 
 #library_content{
-	margin-top: 50px;
+	margin-top: 100px;
 }
 
 #Result_title{
