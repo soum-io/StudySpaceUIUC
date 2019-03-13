@@ -8,13 +8,19 @@
         Create Account for StudySpace!
       </div>
     </h2>
-    <form action="#" method="get" class="ui large form">
+    <form action="/search/" method="POST" class="ui large form"> {% csrf_token %}
       <div class="ui stacked secondary  segment">
         <div class="field">
           <div class="ui left icon input">
             <i class="user icon"></i>
             <input type="text" name="email" placeholder="E-mail address">
           </div>
+        </div>
+        <div class="field">
+            <div class="ui left icon input">
+              <i class="location arrow icon"></i>
+              <input type="text" id="location_autocomplete" name="location" placeholder="Default Location">
+            </div>
         </div>
         <div class="field">
           <div class="ui left icon input">
@@ -28,7 +34,7 @@
             <input type="password" name="passwordAgain" placeholder="Enter Password Again">
           </div>
         </div>
-        <div class="ui fluid large teal submit button">Create Account</div>
+        <input type="submit" value="Create Account" class="ui fluid large teal submit button"></input>
       </div>
 
       <div class="ui error message"></div>
@@ -36,7 +42,7 @@
     </form>
 
     <div class="ui message">
-      Already have an account? <a href="#">Login</a>
+      Already have an account? <a href="/">Login</a>
     </div>
   </div>
 </div>

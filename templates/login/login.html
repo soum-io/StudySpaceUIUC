@@ -8,7 +8,7 @@
         Log-in to to StudySpace
       </div>
     </h2>
-    <form action="#" method="get" class="ui large form">
+    <form action="/search/" method="POST" class="ui large form"> {% csrf_token %}
       <div class="ui stacked secondary  segment">
         <div class="field">
           <div class="ui left icon input">
@@ -22,7 +22,7 @@
             <input type="password" name="password" placeholder="Password">
           </div>
         </div>
-        <div class="ui fluid large teal submit button">Login</div>
+        <input class="ui fluid large teal submit button" type="submit" value="Login"></input>
       </div>
 
       <div class="ui error message"></div>
@@ -31,7 +31,7 @@
 
     <div class="ui message">
         <div>
-          New to us? <a href="#">Register!</a> Or use our site <a href="#">anonymously.</a>
+          New to us? <a href="/signup">Register!</a> Or use our site <a href="/search">anonymously.</a>
         </div>
     </div>
   </div>
