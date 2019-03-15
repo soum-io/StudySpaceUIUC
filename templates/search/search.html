@@ -8,7 +8,7 @@
         Search for Current Study Space on Campus
       </div>
     </h2>
-    <form action="#" method="get" class="ui large form">
+    <form action="/results" method="GET" class="ui large form">
       <div class="ui stacked secondary  segment">
         <div class="field">
           <div class="ui left icon input">
@@ -23,11 +23,11 @@
           </div>
         </div>
         <div class="field">
-            <select class="ui dropdown">
+            <select name="enviroment" class="ui dropdown">
               <option value="">Select Enviroment</option>
-              <option value="2">Quiet Open Study</option>
-              <option value="1">Quiet Closed Study</option>
-              <option value="0">Group Study</option>
+              <option value="Quiet Open Study">Quiet Open Study</option>
+              <option value="Quiet Closed Study">Quiet Closed Study</option>
+              <option value="Group Study">Group Study</option>
             </select>
         </div>
           <div class = "field">
@@ -47,7 +47,7 @@
                   </div>
               </div>
           </div>
-      <div class="ui fluid large teal submit button">Search</div>
+      <input class="ui fluid large teal submit button" type="submit" value="Search"></input>
 
       <div class="ui error message"></div>
 

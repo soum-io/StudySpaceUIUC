@@ -12,26 +12,39 @@
 </head>
 
 <body>
-    <div class="bg-image">
-        <div class="ui inverted menu">
-            <a class = "item">
-              <i class="book icon"></i>&nbsp;StudySpace
-            </a>
-          <a class="item">
-            Search
-          </a>
-          <div class="right menu">
-              <a class="item">
-                 Hello, Mike.&nbsp;<i class="cog icon"></i>
+
+        <div class="bg-image">
+            <div class="ui inverted menu">
+                <a class = "item">
+                  <i class="book icon"></i>&nbsp;StudySpace
+                </a>
+              <a class="item" href="/search">
+                Search
               </a>
-            <a class="ui item">
-              Logout
-            </a>
-          </div>
+              <div class="right menu">
+                {% if isLoggedIn == True %}
+                    <a class="item">
+                        Hello, {{username}}.&nbsp;<i class="cog icon"></i>
+                    </a>
+                    <a class="ui item" href="/">
+                        Logout
+                    </a>
+                {% endif %}
+                {% if isLoggedIn == False %}
+                    <a class="ui item" href="/">
+                        Login
+                    </a>
+                    <a class="ui item"  href='/signup'>
+                        Signup
+                    </a>
+                {% endif %}
+              </div>
+            </div>
+            {% block content %}
+            {% endblock %}
         </div>
-        {% block content %}
-        {% endblock %}
-    </div>
+
+
     <script type="text/javascript">
         function activatePlacesSearch(){
             var input = document.getElementById('location_autocomplete');
