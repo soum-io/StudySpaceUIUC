@@ -11,10 +11,12 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -25,8 +27,7 @@ SECRET_KEY = '6%&dou#$yr^%+go*h6r7ek@&iv^q8ozk265waf@eyzi+&)zt8+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['0.0.0.0', 'localhost', 'still-peak-14797.herokuapp.com']
 
 # Application definition
 
@@ -73,13 +74,21 @@ WSGI_APPLICATION = 'StudySpaceUIUC.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+#DATABASES['default'] = 	dj_database_url.config(conn_max_age=600, ssl_require=True)
+
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': '''{
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'studyspacedb',
+        'USER': 'admin',
+        'PASSWORD': 'adminpass',
+        'HOST': '3df370d150ad20f254a060cc9d03dda8f3774329176310b698c61eaaf30c2732@ec2-75-101-131-79.compute-1.amazonaws.com:5432',
+        'PORT': '5432',
+    }'''
 }
 
+DATABASES = {'default': dj_database_url.parse('postgres://smswphnoswfxrq:3df370d150ad20f254a060cc9d03dda8f3774329176310b698c61eaaf30c2732@ec2-75-101-131-79.compute-1.amazonaws.com:5432/da6rb0tqm6aj78')}
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
@@ -119,6 +128,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    [os.path.join(BASE_DIR, "static")]
-)
+STATICFILES_DIRS = ([os.path.join(BASE_DIR, "static")])
+
