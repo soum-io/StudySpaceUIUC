@@ -32,6 +32,8 @@ ALLOWED_HOSTS = ['0.0.0.0', 'localhost', 'still-peak-14797.herokuapp.com']
 # Application definition
 
 INSTALLED_APPS = [
+#    'studyspaceuiuc',
+    'pages.apps.PagesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -78,14 +80,14 @@ WSGI_APPLICATION = 'StudySpaceUIUC.wsgi.application'
 
 
 DATABASES = {
-    'default': '''{
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'studyspacedb',
         'USER': 'admin',
         'PASSWORD': 'adminpass',
-        'HOST': '3df370d150ad20f254a060cc9d03dda8f3774329176310b698c61eaaf30c2732@ec2-75-101-131-79.compute-1.amazonaws.com:5432',
+        'HOST': 'localhost',
         'PORT': '5432',
-    }'''
+    }
 }
 
 DATABASES = {'default': dj_database_url.parse('postgres://smswphnoswfxrq:3df370d150ad20f254a060cc9d03dda8f3774329176310b698c61eaaf30c2732@ec2-75-101-131-79.compute-1.amazonaws.com:5432/da6rb0tqm6aj78')}
@@ -108,6 +110,12 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+PASSWORD_HASHERS = [
+    'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+    'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+    'django.contrib.auth.hashers.Argon2PasswordHasher',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
@@ -129,4 +137,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = ([os.path.join(BASE_DIR, "static")])
-

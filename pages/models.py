@@ -1,4 +1,6 @@
 from django.db import models
+import uuid
+from datetime import datetime
 # Create your models here.
 
 class Student(models.Model):
@@ -10,7 +12,7 @@ class Student(models.Model):
     major = models.CharField(max_length=255)
 
 class Request(models.Model):
-    requestID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    requestID = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
 
 class Library(models.Model):
     libName = models.CharField(max_length=255, primary_key=True)
@@ -39,10 +41,10 @@ class hoursOfOp(models.Model):
         unique_together = (('libName', 'dayOfWeek'),)
 
 class recordData(models.Model):
-    date = models.DateTimeField(default=datetime.now, auto_now_add=True, blank=True, primary_key=True)
+    date = models.DateTimeField(auto_now_add=True, blank=True, primary_key=True)
     count = models.IntegerField()
 
 class specialDateRanges(models.Model):
     eventName = models.CharField(max_length=255)
-    dateTimeStart = models.DateTimeField((default=datetime.now, blank=False)
-    dateTimeEnd = models.DateTimeField((default=datetime.now, blank=False)
+    dateTimeStart = models.DateTimeField(default=datetime.now(), blank=False)
+    dateTimeEnd = models.DateTimeField(default=datetime.now(), blank=False)
