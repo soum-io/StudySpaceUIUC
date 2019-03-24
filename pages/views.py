@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.contrib.auth.hashers import make_password, check_password
+from .models import Student
 
 
 # Create your views here.
@@ -29,7 +31,13 @@ def search_view(request, *args, **kwargs):
             passwordAgain = request.POST["passwordAgain"]
 
             # TODO: Check that the provided signup information sufficient. If so, add user to the database
-            valid_signup = True
+            valid_signup = False
+            if password == passwordAgain:
+                passHash = make_password(password)
+                new_user = Student(username=email, passwordHash=passHash, mainAddress=location)
+                new_user.save()
+                print("Student Registered")
+                valid_signup = True
 
             if(valid_signup): # user is created now redirect to search
                 logged_in = {"isLoggedIn":True, "username":email} # pass to html for navbar
@@ -46,7 +54,12 @@ def search_view(request, *args, **kwargs):
             password = request.POST["password"]
 
             #TODO: check if username and password match database of user
-            matches = True
+            matches = False
+            temp_student = Student.objects.get(username=email)
+            print("student", temp_student)
+            if check_password(password, temp_student.passwordHash):
+                print("Success Match")
+                matches = True
 
             if(matches): # if user if valid
                 logged_in = {"isLoggedIn":True, "username":email} # pass to html for navbar
