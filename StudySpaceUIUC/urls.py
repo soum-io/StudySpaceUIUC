@@ -25,3 +25,7 @@ urlpatterns = [
     path('results/', results_view, name='results'),
     path('admin/', admin.site.urls),
 ]
+
+urlpatterns += patterns('',
+ (r'^static/(?P.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+ )
