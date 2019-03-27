@@ -1,0 +1,65 @@
+{% extends '../nav.html' %}
+
+{% block content %}
+<div class="all_changes">
+    <div class="library_changes">
+        <div class="library_toggle_wrapper" >
+          <a href="#0" id="library_wrap_toggle">Edit Library Data</a>
+        </div>
+        <div id="library_wrap" style="display: none;">
+            {% for key, values in library_data.items %}
+                <div id="library_data_card">
+                    <form action="#" method="POST" class="ui large form"> {% csrf_token %}
+                      <div class="ui stacked secondary segment">
+                        <div class="field">
+                            <div class="ui labeled input">
+                              <div class="ui label">
+                                Library Name
+                              </div>
+                              <input type="text" name="libName" value="{{values.libName}}" readonly>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui labeled input">
+                              <div class="ui label">
+                                Library Department
+                              </div>
+                              <input type="text" name="libraryDept" value="{{values.libraryDept}}">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui labeled input">
+                              <div class="ui label">
+                                Number of Floors
+                              </div>
+                              <input type="number" name="numFloors" value="{{values.numFloors}}">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui labeled input">
+                              <div class="ui label">
+                                Library Address
+                              </div>
+                              <input type="text" name="libAddress" value="{{values.libAddress}}">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui labeled input">
+                              <div class="ui label">
+                                Room Reservation Link
+                              </div>
+                              <input type="text" name="reservationLink" value="{{values.reservationLink}}">
+                            </div>
+                        </div>
+                        <input class="ui fluid large teal submit button" type="submit" value="Submit Changes"></input>
+                      </div>
+
+                      <div class="ui error message"></div>
+
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

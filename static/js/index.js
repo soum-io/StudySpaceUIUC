@@ -333,3 +333,23 @@ function bubble_Sort(){
 		}
 	}
 }
+
+jQuery(document).ready(function($)
+{
+  $("#library_wrap_toggle").click(function()
+  {
+
+    $("#library_wrap").slideToggle( "slow");
+
+	  if ($("#library_wrap_toggle").text() == "Edit Library Data")
+      {
+        $("#library_wrap_toggle").html("Hide Library Data")
+      }
+	  else
+      {
+        $("#library_wrap_toggle").text("Edit Library Data")
+      }
+
+  });
+
+});

@@ -83,33 +83,37 @@ def results_view(request, *args, **kwargs):
     enviroment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", or "Group Study"
 
     # TODO: Use search information to get reccomendations. Each reccomendation need to contain the following information:
-    # 1. library abbreviation (e.g. "UGL")
+    # 1. library abbreviation (e.g. "UGL"). only "UGL", "GG", and "MainLib" are supported right now.
     # 2. Floor (e.g. "4F" for fourth floor)
     # 3. Floor Section (Like left or right or however else we store it)
     # 4. How far the library is from the location the user entered (e.g. "20M" for 20 miles)
     # 5. Boolean if the section is quiet or not
-    # 6. How confident we are. (e.g. "70%" or "50%")
+    # 6. How confident we are. (e.g. "70" or "50", should be as a percentage)
+
+    # put the recommendations in the following dictionary allResults. When ready, remove the two
+    # results in their with the number of results the algorithm returns.
+    allResults = {
+        "result1": {
+            "lib" : "GG",
+            "floor": "4F",
+            "section": "4_2",
+            "dist" : "20M",
+            "quiet" : True,
+            "conf" : "20"
+        },
+        "result2": {
+            "lib" : "MainLib",
+            "floor": "1F",
+            "section": "1b",
+            "dist" : "18M",
+            "quiet" : False,
+            "conf" : "28"
+        }
+    }
 
     results = {
         "isLoggedIn" : False,
-        "allResults":{
-            "result1": {
-                "lib" : "GG",
-                "floor": "4F",
-                "section": "3",
-                "dist" : "20M",
-                "quiet" : True,
-                "conf" : "20"
-            },
-            "result2": {
-                "lib" : "MainLib",
-                "floor": "4F",
-                "section": "3",
-                "dist" : "18M",
-                "quiet" : False,
-                "conf" : "28"
-            }
-        }
+        "allResults": allResults
     }
 
     # I would say to try to get 5 Max reccomendations to display.
@@ -117,3 +121,28 @@ def results_view(request, *args, **kwargs):
 
     logged_in = {"isLoggedIn":False} # pass to html for navbar
     return render(request, "results/results.html", results)
+
+def update_view(request, *args, **kwargs):
+    logged_in = {"isLoggedIn":False} # pass to html for navbar
+    library_data = {
+        "lib1": {
+            "libName": "Grainger",
+            "libraryDept": "Engineering",
+            "numFloors": 4,
+            "libAddress": "1301 W Springfield Ave, Urbana, IL 61801",
+            "reservationLink": "https://uiuc.libcal.com/spaces?lid=3606"
+        },
+        "lib2": {
+            "libName": "ACES",
+            "libraryDept": "LAS",
+            "numFloors": 5,
+            "libAddress": "1101 S Goodwin Ave, Urbana, IL 61801",
+            "reservationLink": "https://uiuc.libcal.com/spaces?lid=3604"
+        }
+    }
+
+    pass_data = {
+        "logged_in":logged_in,
+        "library_data" : library_data
+    }
+    return render(request, "update/update.html", pass_data)
