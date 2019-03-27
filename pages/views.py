@@ -90,8 +90,30 @@ def results_view(request, *args, **kwargs):
     # 5. Boolean if the section is quiet or not
     # 6. How confident we are. (e.g. "70%" or "50%")
 
+    results = {
+        "isLoggedIn" : False,
+        "allResults":{
+            "result1": {
+                "lib" : "GG",
+                "floor": "4F",
+                "section": "3",
+                "dist" : "20M",
+                "quiet" : True,
+                "conf" : "20"
+            },
+            "result2": {
+                "lib" : "MainLib",
+                "floor": "4F",
+                "section": "3",
+                "dist" : "18M",
+                "quiet" : False,
+                "conf" : "28"
+            }
+        }
+    }
+
     # I would say to try to get 5 Max reccomendations to display.
 
 
     logged_in = {"isLoggedIn":False} # pass to html for navbar
-    return render(request, "results/results.html", logged_in)
+    return render(request, "results/results.html", results)

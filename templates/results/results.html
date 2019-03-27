@@ -3,7 +3,7 @@
 {% block content %}
 {% load staticfiles %}
 
-  <div class="ui grid" id="library_content">
+<div class="ui grid" id="library_content">
     <!-- Title Row "Result" -->
     <div class="sixteen column row" id="title_row">
       <div class="column"></div>
@@ -14,7 +14,7 @@
             <h1 id = "Result_title">
               Results:
               <p1 id = "NumOfResults">
-                (7 found)
+
               </p1>
             </h1>
         </p1>
@@ -27,32 +27,40 @@
 
       <div class="eleven wide column">
         <div class="ui two column grid">
-          <div class="column">
-            <div class="ui form">
-              <div class="inline fields">
+
                 <label id="Filter_label">Filter:</label>
-                <div class="field">
+                <div class="ui checkbox">
+                    <input type="checkbox" name="example" id="Chance_filter"  onclick="bubble_Sort()">
+                    <label id="Chance_text">By Chance</label>
+                </div>
+                <div class="ui checkbox">
+                    <input type="checkbox" name="example" id="Library_filter" onclick="library_Sort()">
+                    <label>By Library</label>
+                </div>
+
+                <!--<div class="field">
                   <div class="ui radio checkbox">
-                    <input type="radio" name="frequency" checked="checked">
+                    <input type="radio" name="frequency" id="Chance_filter" onclick="bubble_Sort()">
                     <label>By Chance</label>
                   </div>
                 </div>
 
                 <div class="field">
                   <div class="ui radio checkbox">
-                    <input type="radio" name="frequency">
+                    <input type="radio" name="frequency" id="Library_filter" onclick="library_Sort()">
                     <label>By Library</label>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
+              -->
+
           <div class="right aligned column">
             <div class="ui basic button" id="Refresh">
               <i class="search icon"></i>
+              <a href="/search">
                 <p1 id="Search_button">
                   Search again
                 </p1>
+              </a>
             </div>
           </div>
         </div>
@@ -60,225 +68,12 @@
     </div>
 
     <!-- Scrollable list of Spaces Row  -->
-
-  <div class="sixteen column row" id="Content_row">
+    <div class="sixteen column row" id="Content_row">
       <div class="column"></div>
 
       <div class="twelve wide column">
         <div class="listspace"  id="ListOfSpace">
           <div class="ui styled accordion" id="List_accordion">
-            <!-- Individual card -->
-            <div class="title">
-              <div class="ui raised card" id="Library_card">
-                <div class="ui grid">
-                  <div class="four wide column">
-                    <div class="ui slide masked reveal image">
-                      <img src="{% static 'img/LibraryImages/Grainger/Grainger1.jpeg' %}" id="Library_image" class="visible content">
-                      <img src="{% static 'img/LibraryImages/Grainger/Grainger2.jpeg' %}" id="Library_image" class="hidden content">
-                    </div>
-                  </div>
-
-                  <div class="twelve wide column">
-                    <h3 id="LibraryNameText"> Grainger Library</h3>
-                    <div class="ui four column grid" id="Library_info">
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Floor:
-                          <h4 id="Floor">
-                            4F
-                          </h4>
-                        </span>
-                      </div>
-
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Section:
-                          <h4 id="Section">
-                            402
-                          </h4>
-                        </span>
-                      </div>
-
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Distance:
-                          <h4 id="Distance">
-                            40M
-                          </h4>
-                        </span>
-                      </div>
-
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Is Quiet?
-                          <p>
-                            <i class="bell icon"></i>
-                          </p>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="extra">
-                  <div class="ui two column grid">
-                    <div class="left aligned column" id="Rating_column">
-                      Chance:
-                      <div class="ui star rating" data-rating="4"></div>
-                    </div>
-                    <div class="right aligned column">
-                      <div class="ui basic button" id="Reserve_button">
-                        <i class="user outline icon "></i>
-                         Reserve Room
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- one card -->
-
-            <!-- Individual card -->
-            <div class="title">
-              <div class="ui raised card" id="Library_card">
-                <div class="ui grid">
-                  <div class="four wide column">
-                    <div class="ui slide masked reveal image">
-                      <img src="{% static 'img/LibraryImages/MainLib/MainLib1.jpeg' %}" id="Library_image" class="visible content">
-                      <img src="{% static 'img/LibraryImages/MainLib/MainLib2.jpeg' %}" class="hidden content">
-                    </div>
-                  </div>
-
-                  <div class="twelve wide column">
-                    <h3 id="LibraryNameText"> Main Library</h3>
-                    <div class="ui four column grid">
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Floor:
-                          <h4 id="Floor">
-                            2F
-                          </h4>
-                        </span>
-                      </div>
-
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Section:
-                          <h4 id="Section">
-                            201
-                          </h4>
-                        </span>
-                      </div>
-
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Distance:
-                          <h4 id="Distance">
-                            70M
-                          </h4>
-                        </span>
-                      </div>
-
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Is Quiet?
-                          <p>
-                            <i class="bell slash icon"></i>
-                          </p>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="extra">
-                  <div class="ui two column grid">
-                    <div class="left aligned column" id="Rating_column">
-                      Chance:
-                      <div class="ui star rating" data-rating="2"></div>
-                    </div>
-                    <div class="right aligned column">
-                      <div class="ui basic button" id="Reserve_button">
-                        <i class="user outline icon "></i>
-                         Reserve Room
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- one card -->
-
-            <!-- Individual card -->
-            <div class="title">
-              <div class="ui raised card" id="Library_card">
-                <div class="ui grid">
-                  <div class="four wide column">
-                    <div class="ui slide masked reveal image">
-                      <img src="{% static 'img/LibraryImages/UGL/Ugl2.jpeg' %}" id="Library_image" class="visible content">
-                      <img src="{% static 'img/LibraryImages/UGL/Ugl1.jpeg' %}" class="hidden content">
-                    </div>
-                  </div>
-
-                  <div class="twelve wide column">
-                    <h3 id="LibraryNameText"> Undergraduate Library</h3>
-                    <div class="ui four column grid">
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Floor:
-                          <h4 id="Floor">
-                            -1F
-                          </h4>
-                        </span>
-                      </div>
-
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Section:
-                          <h4 id="Section">
-                            101
-                          </h4>
-                        </span>
-                      </div>
-
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Distance:
-                          <h4 id="Distance">
-                            250M
-                          </h4>
-                        </span>
-                      </div>
-
-                      <div class="column">
-                        <span id="Info_subtitles">
-                          Is Quiet?
-                          <p>
-                            <i class="bell slash icon"></i>
-                          </p>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="extra">
-                  <div class="ui two column grid">
-                    <div class="left aligned column" id="Rating_column">
-                      Chance:
-                      <div class="ui star rating" data-rating="3"></div>
-                    </div>
-                    <div class="right aligned column">
-                      <div class="ui basic button" id="Reserve_button">
-                        <i class="user outline icon "></i>
-                         Reserve Room
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- one card -->
           </div>
         </div>
       </div>
@@ -287,7 +82,7 @@
           <div class="ui styled accordion" id="List_accordion_Side">
             <div class="title">
               <div class="ui link cards">
-                <div class="card">
+                <div class="card" id="GG" onClick="reply_click(this.id)">
                   <img src="{% static 'img/LibraryImages/Grainger/Grainger1.jpeg' %}" id="Sidebar_image">
                 </div>
                 <div class="content">
@@ -296,7 +91,7 @@
                   </div>
                 </div>
 
-                <div class="card">
+                <div class="card" id="UGL" onClick="reply_click(this.id)">
                   <img src="{% static 'img/LibraryImages/UGL/Ugl1.jpeg' %}" id="Sidebar_image">
                 </div>
                 <div class="content">
@@ -305,7 +100,7 @@
                   </div>
                 </div>
 
-                <div class="card">
+                <div class="card" id="Main" onClick="reply_click(this.id)">
                   <img src="{% static 'img/LibraryImages/MainLib/MainLib1.jpeg' %}" id="Sidebar_image">
                 </div>
                 <div class="content">
@@ -319,8 +114,97 @@
           </div>
         </div>
       </div>
-    <div class="column"></div>
+    </div>
 
-  </div>
 
-{% endblock %}
+  <template id="card_template">
+      <div id="reference_item">
+        <div class="title">
+          <div class="ui raised card" id="Library_card">
+            <div class="ui grid">
+              <div class="four wide column">
+                <div class="ui slide masked reveal image">
+                  <img src="{% static 'img/LibraryImages/Grainger/Grainger1.jpeg' %}" id="Library_image1" class="visible content">
+                  <img src="{% static 'img/LibraryImages/Grainger/Grainger2.jpeg' %}" id="Library_image2" class="hidden content">
+                </div>
+              </div>
+
+              <div class="twelve wide column">
+                <h3 id="LibraryNameText" class="libraryname"> Monster Library</h3>
+                <div class="ui four column grid" id="Library_info">
+                  <div class="column">
+                    <span id="Info_subtitles">
+                      Floor:
+                      <h4 id="Floor">
+                        4F
+                      </h4>
+                    </span>
+                  </div>
+
+                  <div class="column">
+                    <span id="Info_subtitles">
+                      Section:
+                      <h4 id="Section">
+                        402
+                      </h4>
+                    </span>
+                  </div>
+
+                  <div class="column">
+                    <span id="Info_subtitles">
+                      Distance:
+                      <h4 id="Distance">
+                        40M
+                      </h4>
+                    </span>
+                  </div>
+
+                  <div class="column">
+                    <span id="Info_subtitles">
+                      Is Quiet?
+                      <p>
+                        <i id="bellicon" class="bell icon"></i>
+                      </p>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="extra">
+              <div class="ui two column grid">
+                <div class="left aligned column" id="Rating_column">
+                  Chance:
+                  <span id="Chance" class='chance' data-value="10" class="oneline">
+                    402
+                  </span>
+                  <span>
+                    %
+                  </span>
+
+                  <!--<div id="rating" class="ui star rating" data-rating="2"></div>-->
+                </div>
+                <div class="right aligned column">
+                  <div class="ui basic button" id="Reserve_button">
+                    <i class="user outline icon "></i>
+                     Reserve Room
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </template>
+
+
+  <!-- display results -->
+  {% for key, values in allResults.items %}
+      <script type="text/javascript">
+            var quietResult = {{ values.quiet|yesno:"true,false" }};
+            createElement("{{values.lib}}", "{{values.floor}}", "{{values.section}}", "{{values.dist}}", quietResult, "{{values.conf}}");
+      </script>
+  {% endfor %}
+
+
+  {% endblock %}

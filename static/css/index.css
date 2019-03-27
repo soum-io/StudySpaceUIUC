@@ -6,11 +6,11 @@
 .bg-image {
     background: url("/static/img/grainger.jpg");
     /* Full height */
+    background-size: cover;
     height: 100%;
     /* Center and scale the image nicely */
     background-position: center;
     background-repeat: no-repeat;
-    background-size: cover;
     z-index: 1;
 }
 
@@ -24,6 +24,7 @@ body {
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size:cover;
+    overflow: hidden;
 }
 
 #library_content{
