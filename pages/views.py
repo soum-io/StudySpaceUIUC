@@ -1,8 +1,14 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.hashers import make_password, check_password
-from .models import Student
+from .models import Student, Library, Request, FloorSection
+import pandas as pd
+import googlemaps
+import requests
+from itertools import tee
 
+API_key = 'AIzaSyBzozWYI3q9hIHEOh1arRxsMLLzYx83MLQ'
+GOOGLE_MAPS_API_URL = 'http://maps.googleapis.com/maps/api/geocode/json'
 
 # Create your views here.
 def login_view(request, *args, **kwargs):
@@ -80,7 +86,7 @@ def results_view(request, *args, **kwargs):
     groupSize = request.GET["groupSize"] # will be a digit in string format
     forDate = request.GET["forDate"] # format is "mm/dd/yyyy"
     forTime = request.GET["forTime"] # format is "01:00 AM"
-    enviroment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", "EWS Station", or "Group Study"
+    environment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", or "Group Study"
 
     # TODO: Use search information to get reccomendations. Each reccomendation need to contain the following information:
     # 1. library abbreviation (e.g. "UGL"). only "UGL", "GG", and "MainLib" are supported right now.
@@ -92,6 +98,35 @@ def results_view(request, *args, **kwargs):
 
     # put the recommendations in the following dictionary allResults. When ready, remove the two
     # results in their with the number of results the algorithm returns.
+
+    library_df = pd.DataFrame(list(Library.objects.all().values('libName', 'libAddress')))
+    #comment these out once all libraries are supported
+
+    gmaps = googlemaps.Client(key=API_key)
+    origins = []
+    origins.append(location)
+    destinations = list(library_df['libAddress'])
+    matrix = gmaps.distance_matrix(location, destinations, mode="walking")
+    elems = matrix["rows"][0]["elements"]
+    distances = []
+    for dist in elems:
+        lib_distance = dist["distance"]['text']
+        distances.append(lib_distance)
+    library_df['Distance'] = distances
+    print(library_df)
+
+    print(environment)
+    section_df = pd.DataFrame()
+    if environment == "Group Study":
+        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="collaborative").values()))
+    elif environment == "Quiet Open Study":
+        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="quiet").values()))
+    elif environment == "Quiet Closed Study":
+        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="quiet").values()))
+    else:
+        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="EWS").values()))
+    print(section_df)
+
     allResults = {
         "result1": {
             "lib" : "GG",
@@ -131,9 +166,18 @@ def update_view(request, *args, **kwargs):
                 numFloors = request.POST["numFloors"]
                 libAddress = request.POST["libAddress"]
                 reservationLink = request.POST["reservationLink"]
+                temp_lib = Library.objects.get(libName=libName)
+                temp_lib.libName = libName
+                temp_lib.libraryDept = libraryDept
+                temp_lib.numFloors = numFloors
+                temp_lib.libAddress = libAddress
+                temp_lib.reservationLink = reservationLink
+                temp_lib.save()
                 # TODO: update record with primary key libName with the above info
             elif(request.POST["Library"] == "delete"):
                 libName =  request.POST["libName"]
+                temp_lib = Library.objects.get(libName=libName)
+                temp_lib.delete()
                 # TODO: Delete library with name (the primary key) "request.POST["libName"]"
             else:
                 libName =  request.POST["libName"]
@@ -141,28 +185,19 @@ def update_view(request, *args, **kwargs):
                 numFloors = request.POST["numFloors"]
                 libAddress = request.POST["libAddress"]
                 reservationLink = request.POST["reservationLink"]
+                temp_lib = Library(libName=libName, libraryDept=libraryDept, numFloors=numFloors, libAddress=libAddress, reservationLink=reservationLink)
+                temp_lib.save()
                 # TODO: Check that entries are valid and add new Library to the database
 
 
 
     # TODO: fill library data with actual database info from the "Library" model. Take out dummy
     # data when you are done.
-    library_data = {
-        "lib1": {
-            "libName": "Grainger",
-            "libraryDept": "Engineering",
-            "numFloors": 4,
-            "libAddress": "1301 W Springfield Ave, Urbana, IL 61801",
-            "reservationLink": "https://uiuc.libcal.com/spaces?lid=3606"
-        },
-        "lib2": {
-            "libName": "ACES",
-            "libraryDept": "LAS",
-            "numFloors": 5,
-            "libAddress": "1101 S Goodwin Ave, Urbana, IL 61801",
-            "reservationLink": "https://uiuc.libcal.com/spaces?lid=3604"
-        }
-    }
+    library_data = {}
+    lib_vals = Library.objects.values()
+    for lib in lib_vals:
+        library_data[lib['libName']] = lib
+    print(library_data)
 
     pass_data = {
         "isLoggedIn": False,
