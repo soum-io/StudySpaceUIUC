@@ -80,7 +80,7 @@ def results_view(request, *args, **kwargs):
     groupSize = request.GET["groupSize"] # will be a digit in string format
     forDate = request.GET["forDate"] # format is "mm/dd/yyyy"
     forTime = request.GET["forTime"] # format is "01:00 AM"
-    enviroment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", or "Group Study"
+    enviroment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", "EWS Station", or "Group Study"
 
     # TODO: Use search information to get reccomendations. Each reccomendation need to contain the following information:
     # 1. library abbreviation (e.g. "UGL"). only "UGL", "GG", and "MainLib" are supported right now.
@@ -123,7 +123,30 @@ def results_view(request, *args, **kwargs):
     return render(request, "results/results.html", results)
 
 def update_view(request, *args, **kwargs):
-    logged_in = {"isLoggedIn":False} # pass to html for navbar
+    if(request.method == "POST"):
+        if("Library" in request.POST):
+            if(request.POST["Library"] == "update"):
+                libName =  request.POST["libName"]
+                libraryDept = request.POST["libraryDept"]
+                numFloors = request.POST["numFloors"]
+                libAddress = request.POST["libAddress"]
+                reservationLink = request.POST["reservationLink"]
+                # TODO: update record with primary key libName with the above info
+            elif(request.POST["Library"] == "delete"):
+                libName =  request.POST["libName"]
+                # TODO: Delete library with name (the primary key) "request.POST["libName"]"
+            else:
+                libName =  request.POST["libName"]
+                libraryDept = request.POST["libraryDept"]
+                numFloors = request.POST["numFloors"]
+                libAddress = request.POST["libAddress"]
+                reservationLink = request.POST["reservationLink"]
+                # TODO: Check that entries are valid and add new Library to the database
+
+
+
+    # TODO: fill library data with actual database info from the "Library" model. Take out dummy
+    # data when you are done.
     library_data = {
         "lib1": {
             "libName": "Grainger",
@@ -142,7 +165,7 @@ def update_view(request, *args, **kwargs):
     }
 
     pass_data = {
-        "logged_in":logged_in,
+        "isLoggedIn": False,
         "library_data" : library_data
     }
     return render(request, "update/update.html", pass_data)

@@ -11,10 +11,9 @@
     <script src="{% static 'js/index.js' %}"></script>
 </head>
 
-<body>
-
-        <div class="bg-image">
-            <div class="ui inverted menu">
+<body class="bg-image">
+        <div>
+            <div class="ui inverted menu fixme">
                 <a class = "item">
                   <i class="book icon"></i>&nbsp;StudySpace
                 </a>
@@ -40,6 +39,7 @@
                 {% endif %}
               </div>
             </div>
+
             {% block content %}
             {% endblock %}
         </div>
