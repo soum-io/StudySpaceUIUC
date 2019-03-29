@@ -6,10 +6,11 @@ import pandas as pd
 import googlemaps
 import requests
 from itertools import tee
+from django.db import connection
+
 
 API_key = 'AIzaSyBzozWYI3q9hIHEOh1arRxsMLLzYx83MLQ'
 GOOGLE_MAPS_API_URL = 'http://maps.googleapis.com/maps/api/geocode/json'
-
 
 # Create your views here.
 def login_view(request, *args, **kwargs):
@@ -41,8 +42,11 @@ def search_view(request, *args, **kwargs):
             valid_signup = False
             if password == passwordAgain:
                 passHash = make_password(password)
-                new_user = Student(username=email, passwordHash=passHash, mainAddress=location)
-                new_user.save()
+                #new_user = Student(username=email, passwordHash=passHash, mainAddress=location)
+                #new_user.save()
+                insert_query = 'INSERT INTO pages_student ("username", "passwordHash", "mainAddress", "prefStudyEnv", "favLibrary", "major") VALUES (%s, %s, %s, \'\', \'\', \'\');'
+                with connection.cursor() as cursor:
+                    cursor.execute(insert_query, (email, passHash, location))
                 print("Student Registered")
                 valid_signup = True
 
@@ -100,23 +104,21 @@ def results_view(request, *args, **kwargs):
     # put the recommendations in the following dictionary allResults. When ready, remove the two
     # results in their with the number of results the algorithm returns.
 
-    library_df = pd.DataFrame(list(Library.objects.all().values('libName', 'libAddress')))
+    library_df = pd.DataFrame(list(Library.objects.all().values('libName', 'libAddress', 'reservationLink')))
     #comment these out once all libraries are supported
 
     gmaps = googlemaps.Client(key=API_key)
     origins = []
     origins.append(location)
     destinations = list(library_df['libAddress'])
-    matrix = gmaps.distance_matrix(location, destinations, mode="walking")
+    matrix = gmaps.distance_matrix(location, destinations, mode="walking", units="imperial")
     elems = matrix["rows"][0]["elements"]
     distances = []
     for dist in elems:
         lib_distance = dist["distance"]['text']
         distances.append(lib_distance)
     library_df['Distance'] = distances
-    print(library_df)
 
-    print(environment)
     section_df = pd.DataFrame()
     if environment == "Group Study":
         section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="collaborative").values()))
@@ -126,28 +128,31 @@ def results_view(request, *args, **kwargs):
         section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="quiet").values()))
     else:
         section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="EWS").values()))
-    print(section_df)
 
-    allResults = {
-        "result1": {
-            "lib" : "GG",
-            "floor": "4F",
-            "section": "4_2",
-            "dist" : "20M",
-            "quiet" : True,
-            "conf" : "20",
-            "link" : "http://www.google.com"
-        },
-        "result2": {
-            "lib" : "MainLib",
-            "floor": "1F",
-            "section": "1b",
-            "dist" : "18M",
-            "quiet" : False,
-            "conf" : "28",
-            "link" : "http://www.google.com"
-        }
-    }
+    allResults = {}
+    res = "result"
+    count = 1
+    for index, section in section_df.iterrows():
+        result = {}
+        if section['libName'] == "Grainger":
+            result["lib"] = "GG"
+            result["conf"] = "75"
+        elif section['libName'] == "UGL":
+            result["lib"] = "UGL"
+            result["conf"] = "50"
+        elif section['libName'] == "Main Library":
+            result["lib"] = "MainLib"
+            result["conf"] = "25"
+        result["floor"] = section['floorNum']
+        result["section"] = section['section']
+        result["dist"] = library_df[library_df['libName'] == section['libName']].iloc[0]['Distance']
+        if environment == "Quiet Open Study" or environment == "Quiet Closed Study":
+            result["quiet"] = True
+        else:
+            result["quiet"] = False
+        result["link"] = library_df[library_df['libName'] == section['libName']].iloc[0]['reservationLink']
+        allResults[res + str(count)] = result
+        count+=1
 
     results = {
         "isLoggedIn" : False,
@@ -155,7 +160,6 @@ def results_view(request, *args, **kwargs):
     }
 
     # I would say to try to get 5 Max reccomendations to display.
-
 
     logged_in = {"isLoggedIn":False} # pass to html for navbar
     return render(request, "results/results.html", results)
@@ -169,18 +173,15 @@ def update_view(request, *args, **kwargs):
                 numFloors = request.POST["numFloors"]
                 libAddress = request.POST["libAddress"]
                 reservationLink = request.POST["reservationLink"]
-                temp_lib = Library.objects.get(libName=libName)
-                temp_lib.libName = libName
-                temp_lib.libraryDept = libraryDept
-                temp_lib.numFloors = numFloors
-                temp_lib.libAddress = libAddress
-                temp_lib.reservationLink = reservationLink
-                temp_lib.save()
+                update_query = 'UPDATE pages_library SET "libraryDept" = %s, "numFloors" = %s, "libAddress" = %s, "reservationLink" = %s WHERE "libName" = %s;'
+                with connection.cursor() as cursor:
+                    cursor.execute(update_query, (libraryDept, numFloors, libAddress, reservationLink, libName))
                 # TODO: update record with primary key libName with the above info
             elif(request.POST["Library"] == "delete"):
                 libName =  request.POST["libName"]
-                temp_lib = Library.objects.get(libName=libName)
-                temp_lib.delete()
+                delete_query = 'DELETE FROM pages_library WHERE "libName" = %s;'
+                with connection.cursor() as cursor:
+                    cursor.execute(delete_query, (libName,))
                 # TODO: Delete library with name (the primary key) "request.POST["libName"]"
             else:
                 libName =  request.POST["libName"]
@@ -188,8 +189,9 @@ def update_view(request, *args, **kwargs):
                 numFloors = request.POST["numFloors"]
                 libAddress = request.POST["libAddress"]
                 reservationLink = request.POST["reservationLink"]
-                temp_lib = Library(libName=libName, libraryDept=libraryDept, numFloors=numFloors, libAddress=libAddress, reservationLink=reservationLink)
-                temp_lib.save()
+                insert_query = 'INSERT INTO pages_library ("libName", "libraryDept", "numFloors", "libAddress", "reservationLink") VALUES (%s, %s, %s, %s, %s);'
+                with connection.cursor() as cursor:
+                    cursor.execute(insert_query, (libName, libraryDept, numFloors, libAddress, reservationLink))
                 # TODO: Check that entries are valid and add new Library to the database
 
 
