@@ -10,6 +10,7 @@ from itertools import tee
 API_key = 'AIzaSyBzozWYI3q9hIHEOh1arRxsMLLzYx83MLQ'
 GOOGLE_MAPS_API_URL = 'http://maps.googleapis.com/maps/api/geocode/json'
 
+
 # Create your views here.
 def login_view(request, *args, **kwargs):
     logged_in = {"isLoggedIn":False} # pass to html for navbar
@@ -134,7 +135,8 @@ def results_view(request, *args, **kwargs):
             "section": "4_2",
             "dist" : "20M",
             "quiet" : True,
-            "conf" : "20"
+            "conf" : "20",
+            "link" : "http://www.google.com"
         },
         "result2": {
             "lib" : "MainLib",
@@ -142,7 +144,8 @@ def results_view(request, *args, **kwargs):
             "section": "1b",
             "dist" : "18M",
             "quiet" : False,
-            "conf" : "28"
+            "conf" : "28",
+            "link" : "http://www.google.com"
         }
     }
 

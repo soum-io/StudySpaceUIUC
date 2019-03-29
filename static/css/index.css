@@ -17,21 +17,51 @@
 }
 
 .ui.menu:first-child {
-    margin-bottom: 5%;
+    /* margin-bottom: 5%; */
 }
 
 /* Remove all margins to make window properly fit the contents */
-body {
+/* body {
 	height:	100%;
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size:cover;
     overflow: scroll;
+} */
+
+body {
+	overflow: hidden;
 }
 
-#library_content{
-	margin-top: 100px;
+img.bg {
+  /* Set rules to fill background */
+  min-height: 100%;
+  min-width: 1024px;
+
+  /* Set up proportionate scaling */
+  width: 100%;
+  height: auto;
+
+  /* Set up positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
 }
+
+@media screen and (max-width: 1024px) { /* Specific to this particular image */
+  img.bg {
+    left: 50%;
+    margin-left: -512px;   /* 50% */
+  }
+}
+
+#overlay{
+	margin: 0 auto;
+	max-width: 1600px;
+	max-height: 900px;
+    overflow-y: scroll;
+}
+
 
 #Result_title{
 	margin-left: 10px;
@@ -44,57 +74,85 @@ body {
 	background: linear-gradient(to bottom right, white, transparent 50%);
 }
 
-#Filter_row{
-	margin-bottom: 13px;
-	height:10px;
-}
 
 #Filter_label{
-	margin-left: 20px;
+	margin-left: 8px;
+}
+
+#Filter_row{
+	min-width: 938px;
+	width: 80%;
 }
 
 #Content_row{
 	margin-top: 0px;
 }
 
-#ListOfSpace{
-	height:400px;
-	width: 920px;
-	overflow: auto;
+#card_col{
+	min-width: 700px;
 }
 
+#ListOfSpace{
+	width: 100%;
+	height:	60vh;
+	overflow: auto;
+}
 
 #List_accordion{
 	width: 100%;
 	background-color: #F8EEB4;
 }
 
-#List_accordion_Side{
-	width: 100%;
-	background-color: #FfE6EB;
+@media only screen and (max-width: 1016px) {
+    #Sidebar {
+        display: none;
+    }
+}
 
+@media only screen and (max-height: 550px) {
+    #title_row {
+        display: none;
+    }
+}
+
+@media only screen and (max-height: 350px) {
+    #Filter_row {
+        display: none;
+    }
+}
+
+
+#Sidebar{
+	min-width: 160px;
+	height: 50vh;
+	overflow: auto;
+}
+
+
+
+#bar_col{
+	width: 192px;
+	height: 390px;
+}
+
+#title_row{
+	min-width: 938px;
 }
 
 #Library_card{
 	width: 100%;
 	background-color: #F6E5E5;
-	height:180px;
+	min-height:180px;
 }
 
-#Library_image{
-	max-width: 80%;
-	margin-top: 10px;
-	margin-left: 10px;
-}
 
-#Sidebar{
-	height:390px;
+#List_accordion_Side{
 	width: 100%;
-	overflow: auto;
+	background-color: #FfE6EB;
 }
 
 #Sidebar_image{
-	max-width: 100%;
+	width: 100%
 }
 
 #Siderbar_text{

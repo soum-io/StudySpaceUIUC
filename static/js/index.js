@@ -12,7 +12,7 @@ $(document).ready(function(){$(".rating").rating();});
 *	Input: string1, string2, string3, string4, boolean1, string5
 * Output: template card with provided parameters in scrollable list
 **************************************************/
-function createElement(lib,floor,section,distance,isquiet,chance){
+function createElement(lib,floor,section,distance,isquiet,chance,link){
 	var registered = false
 	//get reference to the list
 	var S_list = document.getElementById("List_accordion")
@@ -26,30 +26,30 @@ function createElement(lib,floor,section,distance,isquiet,chance){
 
 	//setAttributes for library card
 	if(lib == 'UGL'){
-		console.log('UGL')
-		card_template.getElementById("Library_image1").src = src="/static/img/LibraryImages/UGL/Ugl1.jpeg";
-		card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/UGL/Ugl2.jpeg";
-		card_template.getElementById("reference_item").id = 'UGL';
-		card_template.getElementById("LibraryNameText").innerText = "Undergraduate Library";
-		registered = true
+	    console.log('UGL')
+	    card_template.getElementById("Library_image1").src = src="/static/img/LibraryImages/UGL/Ugl1.jpeg";
+	    card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/UGL/Ugl2.jpeg";
+	    card_template.getElementById("reference_item").id = 'UGL';
+	    card_template.getElementById("LibraryNameText").innerText = "Undergraduate Library";
+	    registered = true
 	}
 	else if (lib == 'GG') {
-		console.log('GG')
-		card_template.getElementById("Library_image1").src = src="/static/img/LibraryImages/Grainger/Grainger1.jpeg";
-		card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/Grainger/Grainger2.jpeg";
-		card_template.getElementById("reference_item").id = 'GG';
-		card_template.getElementById("LibraryNameText").innerText = "Grainger Library";
-		registered = true
+	    console.log('GG')
+	    card_template.getElementById("Library_image1").src = src="/static/img/LibraryImages/Grainger/Grainger1.jpeg";
+	    card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/Grainger/Grainger2.jpeg";
+	    card_template.getElementById("reference_item").id = 'GG';
+	    card_template.getElementById("LibraryNameText").innerText = "Grainger Library";
+	    registered = true
 	}
 	else if (lib == 'MainLib') {
-		console.log('GG')
-		card_template.getElementById("Library_image1").src = src="/static/img/LibraryImages/MainLib/MainLib1.jpeg";
-		card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/MainLib/MainLib2.jpeg";
-		card_template.getElementById("reference_item").id = 'Main';
-		card_template.getElementById("LibraryNameText").innerText = "Main Library";
-		registered = true
+	    console.log('GG')
+	    card_template.getElementById("Library_image1").src = src="/static/img/LibraryImages/MainLib/MainLib1.jpeg";
+	    card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/MainLib/MainLib2.jpeg";
+	    card_template.getElementById("reference_item").id = 'Main';
+	    card_template.getElementById("LibraryNameText").innerText = "Main Library";
+	    registered = true
 	}else{
-		console.log('Library not defined')
+	    console.log('Library not defined')
 	}
 
 	if(registered == true)
@@ -59,7 +59,8 @@ function createElement(lib,floor,section,distance,isquiet,chance){
 		card_template.getElementById("Section").innerText = section;
 		card_template.getElementById("Distance").innerText = distance;
 		card_template.getElementById("Chance").innerText = chance;
-
+		card_template.getElementById("Reserve_button").href = link;
+		console.log(card_template.getElementById("Reserve_button".href));
 
 		if(isquiet == false)
 		{
@@ -102,18 +103,8 @@ function bubble_sort_helper(x){
 *	Input: None
 * Output: None
 **************************************************/
-function myFunction(){
-	 alert("hi");
- }
 
 function reply_click(clicked_id){
-
-		//When user uses quick navigation bar
-		//Turn off the use of filters automatically
-		var Library_fil = document.getElementById("Library_filter");
-		Library_fil.checked = false;
-		var Chance_filter = document.getElementById("Chance_filter");
-		Chance_filter.checked = false;
 
 		//Sort list by chance by default
 		bubble_Sort();
@@ -141,8 +132,18 @@ function reply_click(clicked_id){
 
 }
 
+function reportvalue(){
+	var Library_filter = document.getElementById("Library_filter");
+	var Chance_filter = document.getElementById("Chance_filter");
+	console.log("reportvalue")
+
+	console.log("Library_filter"+"    " +Library_filter.value)
+	console.log("Chance_filter"+"    " +Chance_filter.value)
+
+}
+
 /************  Filtering Scenarios *************
-* Case 1: User don't care about library, only want to see by chance
+*	Case 1: User don't care about library, only want to see by chance
 		--> Click 'By Chance'
 * Case 2: User wanna see by chance first, then want to see by library under by chance
 		--> Click 'By Chance'  first, then Click 'By Library' second
@@ -158,18 +159,10 @@ function reply_click(clicked_id){
 **************************************************/
 function library_Sort(){
 
-	//Get reference to those filters
-	var Library_filter = document.getElementById("Library_filter");
-	var Chance_filter = document.getElementById("Chance_filter");
-
 	//If user's unclicking library_filter, automatically unclick chance filter as well
-	if(Library_filter.checked == false){
-		Chance_filter.checked = false;
-
-	}else{
 		// if user's clicking library filter, automatically click chance filter as well
-		Chance_filter.checked = true;
 
+		console.log("library sort")
 		// get reference to the list
 		var accordion = document.getElementById("List_accordion");
 		var children = accordion.childNodes;
@@ -194,7 +187,6 @@ function library_Sort(){
 
 		//Condition is useless because I change it to once user click
 		//library filter, automatically turn on the chance filter
-		if(Chance_filter.checked == true){
 			for(var m = 0; m < x.length; m++){
 				if(x[m].getElementsByClassName('libraryname')[0].innerText == "Grainger Library"){
 					gg.push(x[m]);
@@ -238,28 +230,6 @@ function library_Sort(){
 			}else{
 				console.log("no Undergraduate Library found");
 			}
-		}else{
-			for(var m = 0; m < x.length; m++){
-				if(x[m].getElementsByClassName('libraryname')[0].innerText == "Grainger Library"){
-					console.log("found gg");
-					y.push(x[m]);
-				}
-			}
-
-			for(var i = 0; i < x.length; i++){
-				if(x[i].getElementsByClassName('libraryname')[0].innerText == "Main Library"){
-					console.log("found main");
-					y.push(x[i]);
-				}
-			}
-
-			for(var j = 0; j < x.length; j++){
-				if(x[j].getElementsByClassName('libraryname')[0].innerText == "Undergraduate Library"){
-					console.log("found ugl");
-					y.push(x[j]);
-				}
-			}
-		}
 
 		//Clear all Children
 		while(accordion.hasChildNodes()){
@@ -270,7 +240,7 @@ function library_Sort(){
 		for(var n = 0; n < y.length; n++){
 			accordion.appendChild(y[n]);
 		}
-	}
+
 }
 
 /************  Sorting: Bubble sort *************
@@ -278,16 +248,6 @@ function library_Sort(){
 * Output: None
 **************************************************/
 function bubble_Sort(){
-
-	//get reference to the filters
-	var Library_filter = document.getElementById("Library_filter");
-	//if library_filter is checked, it means chance_filter is checked as well
-	//so we can use the same algorithm in Library_sort
-	if(Library_filter.checked == true)
-	{
-		library_Sort();
-	}else{
-	//otherwise it's chance checked only
 
 		//get reference to the list
 		var accordion = document.getElementById("List_accordion");
@@ -331,7 +291,7 @@ function bubble_Sort(){
 		for(var n = 0; n < x.length; n++){
 			accordion.appendChild(x[n]);
 		}
-	}
+
 }
 
 jQuery(document).ready(function($)

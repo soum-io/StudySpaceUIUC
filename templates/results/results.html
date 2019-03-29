@@ -3,118 +3,101 @@
 {% block content %}
 {% load staticfiles %}
 
-<div class="ui grid" id="library_content">
-    <!-- Title Row "Result" -->
-    <div class="sixteen column row" id="title_row">
-      <div class="column"></div>
+<div id="overlay">
+    <div class="ui grid" id="library_content">
+        <!-- Title Row "Result" -->
+        <div class="sixteen column row" id="title_row">
+          <div class="column"></div>
 
-      <div class="fourteen wide column" id="Result_column">
-        <p1 ui class="header">
-          <img align="left" class="ui tiny circular image" src="{% static 'img/icons/library.png' %}">
-            <h1 id = "Result_title">
-              Results:
-              <p1 id = "NumOfResults">
+          <div class="fourteen wide column" id="Result_column">
+            <p1 ui class="header">
+              <img align="left" class="ui tiny circular image" src="{% static 'img/icons/library.png' %}">
+                <h1 id = "Result_title">
+                  Results:
+                  <p1 id = "NumOfResults">
 
-              </p1>
-            </h1>
-        </p1>
-      </div>
-    </div>
+                  </p1>
+                </h1>
+            </p1>
+          </div>
+        </div>
 
-    <!-- Filter Row  -->
-    <div class="sixteen column row" id="Filter_row">
-      <div class="column"></div>
+        <!-- Filter Row  -->
+        <div class="sixteen column row" id="Filter_row">
+          <div class="column"></div>
 
-      <div class="eleven wide column">
-        <div class="ui two column grid">
+          <div class="eleven wide column">
+            <div class="ui two column grid">
 
-                <label id="Filter_label">Filter:</label>
-                <div class="ui checkbox">
-                    <input type="checkbox" name="example" id="Chance_filter"  onclick="bubble_Sort()">
-                    <label id="Chance_text">By Chance</label>
-                </div>
-                <div class="ui checkbox">
-                    <input type="checkbox" name="example" id="Library_filter" onclick="library_Sort()">
-                    <label>By Library</label>
-                </div>
+                <button class="ui large teal submit button" id="Chance_filter" value = "2" onclick="bubble_Sort()">
+                  Filter By Chance
+                </button>
 
-                <!--<div class="field">
-                  <div class="ui radio checkbox">
-                    <input type="radio" name="frequency" id="Chance_filter" onclick="bubble_Sort()">
-                    <label>By Chance</label>
-                  </div>
-                </div>
+                <button class="ui large teal submit button" id="Library_filter" value = "2" onclick="library_Sort()">
+                  Filter By Library
+                </button>
 
-                <div class="field">
-                  <div class="ui radio checkbox">
-                    <input type="radio" name="frequency" id="Library_filter" onclick="library_Sort()">
-                    <label>By Library</label>
-                  </div>
-                </div>
-              -->
+                <button class="ui large teal button" >
+                    <a href="/search/" style="color: #ffffff;">
+                      <i class="search icon"></i>
+                          Search again
+                    </a>
+                </button>
 
-          <div class="right aligned column">
-            <div class="ui basic button" id="Refresh">
-              <i class="search icon"></i>
-              <a href="/search">
-                <p1 id="Search_button">
-                  Search again
-                </p1>
-              </a>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Scrollable list of Spaces Row  -->
-    <div class="sixteen column row" id="Content_row">
-      <div class="column"></div>
+        <!-- Scrollable list of Spaces Row  -->
+        <div class="sixteen column row" id="Content_row">
+          <div class="column"></div>
 
-      <div class="twelve wide column">
-        <div class="listspace"  id="ListOfSpace">
-          <div class="ui styled accordion" id="List_accordion">
+          <div class="twelve wide column" id="card_col">
+            <div class="listspace"  id="ListOfSpace">
+              <div class="ui styled accordion" id="List_accordion">
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-      <div class="two wide column row">
-        <div class="listspace" id="Sidebar">
-          <div class="ui styled accordion" id="List_accordion_Side">
-            <div class="title">
-              <div class="ui link cards">
-                <div class="card" id="GG" onClick="reply_click(this.id)">
-                  <img src="{% static 'img/LibraryImages/Grainger/Grainger1.jpeg' %}" id="Sidebar_image">
-                </div>
-                <div class="content">
-                  <div class="header" id="Siderbar_text">
-                    Grainger Library
+          <div class="two wide column row" id="bar_col">
+            <div class="listspace" id="Sidebar">
+              <div class="ui styled accordion" id="List_accordion_Side">
+                <div class="title">
+                  <div class="ui link cards">
+                    <div class="card" id="GG" onClick="reply_click(this.id)">
+                      <img src="{% static 'img/LibraryImages/Grainger/Grainger1.jpeg' %}" id="Sidebar_image">
+                    </div>
+                    <div class="content">
+                      <div class="header" id="Siderbar_text">
+                        Grainger Library
+                      </div>
+                    </div>
+
+                    <div class="card" id="UGL" onClick="reply_click(this.id)">
+                      <img src="{% static 'img/LibraryImages/UGL/Ugl1.jpeg' %}" id="Sidebar_image">
+                    </div>
+                    <div class="content">
+                      <div class="header" id="Siderbar_text">
+                        Undergraduate Library
+                      </div>
+                    </div>
+
+                    <div class="card" id="Main" onClick="reply_click(this.id)">
+                      <img src="{% static 'img/LibraryImages/MainLib/MainLib1.jpeg' %}" id="Sidebar_image">
+                    </div>
+                    <div class="content">
+                      <div class="header" id="Siderbar_text">
+                        Main Library
+                      </div>
+                    </div>
+
                   </div>
                 </div>
-
-                <div class="card" id="UGL" onClick="reply_click(this.id)">
-                  <img src="{% static 'img/LibraryImages/UGL/Ugl1.jpeg' %}" id="Sidebar_image">
-                </div>
-                <div class="content">
-                  <div class="header" id="Siderbar_text">
-                    Undergraduate Library
-                  </div>
-                </div>
-
-                <div class="card" id="Main" onClick="reply_click(this.id)">
-                  <img src="{% static 'img/LibraryImages/MainLib/MainLib1.jpeg' %}" id="Sidebar_image">
-                </div>
-                <div class="content">
-                  <div class="header" id="Siderbar_text">
-                    Main Library
-                  </div>
-                </div>
-
               </div>
             </div>
           </div>
         </div>
-      </div>
     </div>
+</div>
 
 
   <template id="card_template">
@@ -185,10 +168,10 @@
                   <!--<div id="rating" class="ui star rating" data-rating="2"></div>-->
                 </div>
                 <div class="right aligned column">
-                  <div class="ui basic button" id="Reserve_button">
-                    <i class="user outline icon "></i>
-                     Reserve Room
-                  </div>
+                    <a href="http://google.com" id="Reserve_button" class="ui basic button"
+                      <i class="user outline icon "></i>
+                       Reserve Room
+                    </a>
                 </div>
               </div>
             </div>
@@ -202,7 +185,7 @@
   {% for key, values in allResults.items %}
       <script type="text/javascript">
             var quietResult = {{ values.quiet|yesno:"true,false" }};
-            createElement("{{values.lib}}", "{{values.floor}}", "{{values.section}}", "{{values.dist}}", quietResult, "{{values.conf}}");
+            createElement("{{values.lib}}", "{{values.floor}}", "{{values.section}}", "{{values.dist}}", quietResult, "{{values.conf}}", "{{values.link}}");
       </script>
   {% endfor %}
 
