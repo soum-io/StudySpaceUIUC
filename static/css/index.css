@@ -59,7 +59,7 @@ img.bg {
 	margin: 0 auto;
 	max-width: 1600px;
 	max-height: 900px;
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
 }
 
 
