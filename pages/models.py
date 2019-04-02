@@ -44,6 +44,13 @@ class recordData(models.Model):
     date = models.DateTimeField(auto_now_add=True, blank=True, primary_key=True)
     count = models.IntegerField()
 
+                    # "libName" : "Grainger",
+                    # "floorNum" : 2,
+                    # "section" : "2_A",
+                    # "count" : 25,
+                    # "dayOfWeek": 0,
+                    # "time": 12
+
 class specialDateRanges(models.Model):
     eventName = models.CharField(max_length=255)
     dateTimeStart = models.DateTimeField(default=datetime.now(), blank=False)

@@ -8,28 +8,34 @@ import requests
 from itertools import tee
 from django.db import connection
 
+# how to pass to page to page if user is logged in or not. This is really bad
+# for privacy as there is much more secure ways to do this. If there is time
+# before the final presentation, this will be fixed
+logged_in = {"isLoggedIn": False, "username": ""}
 
 API_key = 'AIzaSyBzozWYI3q9hIHEOh1arRxsMLLzYx83MLQ'
 GOOGLE_MAPS_API_URL = 'http://maps.googleapis.com/maps/api/geocode/json'
 
 # Create your views here.
 def login_view(request, *args, **kwargs):
-    logged_in = {"isLoggedIn":False} # pass to html for navbar
-    return render(request, "login/login.html", logged_in)
+    global logged_in
+    logged_in = {"isLoggedIn":False, "username":""} # pass to html for navbar
+    return render(request, "login/login.html", {"logged_in":logged_in})
 
 
 def signup_view(request, *args, **kwargs):
-    logged_in = {"isLoggedIn":False} # pass to html for navbar
-    return render(request, "signup/signup.html", logged_in)
+    global logged_in
+    logged_in = {"isLoggedIn":False, "username":""} # pass to html for navbar
+    return render(request, "signup/signup.html", {"logged_in":logged_in})
 
 
 def search_view(request, *args, **kwargs):
+    global logged_in
     # check if we are requesting from login or annonomous user.
     if(request.method == "POST"): # post are from login
 
         # check if request is from a user signup or login
         signup_request = "location" in request.POST # this is only a field in the signup form
-        print("here")
         if(signup_request): # coming from signup
 
             # get singup form data
@@ -52,10 +58,10 @@ def search_view(request, *args, **kwargs):
 
             if(valid_signup): # user is created now redirect to search
                 logged_in = {"isLoggedIn":True, "username":email} # pass to html for navbar
-                return  render(request, "search/search.html", logged_in)
+                return  render(request, "search/search.html", {"logged_in":logged_in})
             else: # signup fields are not valid
-                logged_in = {"isLoggedIn":False} # pass to html for navbar
-                return render(request, "login/login.html", logged_in)
+                logged_in = {"isLoggedIn":False, "username":""} # pass to html for navbar
+                return render(request, "login/login.html", {"logged_in":logged_in})
 
         else:    # coming from login
             print(request.POST)
@@ -74,17 +80,17 @@ def search_view(request, *args, **kwargs):
 
             if(matches): # if user if valid
                 logged_in = {"isLoggedIn":True, "username":email} # pass to html for navbar
-                return  render(request, "search/search.html", logged_in)
+                return  render(request, "search/search.html", {"logged_in":logged_in})
             else: # user is not valid
-                logged_in = {"isLoggedIn":False} # pass to html for navbar
-                return render(request, "login/login.html", logged_in)
+                logged_in = {"isLoggedIn":False, "username": ""} # pass to html for navbar
+                return render(request, "login/login.html", {"logged_in":logged_in})
 
-    else: # get from anon user
-        logged_in = {"isLoggedIn":False} # pass to html for navbar
-        return render(request, "search/search.html", logged_in)
+    else: # get from anon or entering another search from results page user
+        return render(request, "search/search.html", {"logged_in":logged_in})
 
 
 def results_view(request, *args, **kwargs):
+    global logged_in
     print(request.GET)
     # get search form data
     location = request.GET["location"] # address as string address, not coordinates
@@ -154,15 +160,13 @@ def results_view(request, *args, **kwargs):
         allResults[res + str(count)] = result
         count+=1
 
-    results = {
-        "isLoggedIn" : False,
+    pass_data = {
+        "logged_in" : logged_in,
         "allResults": allResults
     }
 
     # I would say to try to get 5 Max reccomendations to display.
-
-    logged_in = {"isLoggedIn":False} # pass to html for navbar
-    return render(request, "results/results.html", results)
+    return render(request, "results/results.html", pass_data)
 
 def update_view(request, *args, **kwargs):
     if(request.method == "POST"):
@@ -195,17 +199,164 @@ def update_view(request, *args, **kwargs):
                 # TODO: Check that entries are valid and add new Library to the database
 
 
+        elif("Floor" in request.POST):
+            if(request.POST["Floor"] == "update"):
+                libName =  request.POST["libName"]
+                floorNum = request.POST["floorNum"]
+                section = request.POST["section"]
+                numSeats = request.POST["numSeats"]
+                studyEnv = request.POST["studyEnv"]
+                # TODO: update record FloorSection with primary key {libName, floornum, and section} with the above info
+            elif(request.POST["Floor"] == "delete"):
+                libName =  request.POST["libName"]
+                floorNum = request.POST["floorNum"]
+                section = request.POST["section"]
+                # TODO: Delete FloorSection with primary key {libName, floornum, and section}
+            else:
+                libName =  request.POST["libName"]
+                floorNum = request.POST["floorNum"]
+                section = request.POST["section"]
+                numSeats = request.POST["numSeats"]
+                studyEnv = request.POST["studyEnv"]
+                # TODO: Check that entries are valid and add new FloorSection to the database
 
-    # TODO: fill library data with actual database info from the "Library" model. Take out dummy
-    # data when you are done.
-    library_data = {}
-    lib_vals = Library.objects.values()
-    for lib in lib_vals:
-        library_data[lib['libName']] = lib
-    print(library_data)
+        elif("Hours" in request.POST):
+            if(request.POST["Hours"] == "update"):
+                libName =  request.POST["libName"]
+                dayOfWeek = request.POST["dayOfWeek"]
+                openTime = request.POST["openTime"]
+                closeTime = request.POST["closeTime"]
+                # TODO: update record hours of operation with primary key {libName, dayOfWeek} with the above info
+            elif(request.POST["Hours"] == "delete"):
+                libName =  request.POST["libName"]
+                dayOfWeek = request.POST["dayOfWeek"]
+                # TODO: Delete hours of operation with primary key {libName, dayOfWeek}
+            else:
+                libName =  request.POST["libName"]
+                dayOfWeek = request.POST["dayOfWeek"]
+                openTime = request.POST["openTime"]
+                closeTime = request.POST["closeTime"]
+                # TODO: Check that entries are valid and add new hours of operation to the database
 
-    pass_data = {
-        "isLoggedIn": False,
-        "library_data" : library_data
-    }
-    return render(request, "update/update.html", pass_data)
+        elif("Records" in request.POST):
+            if(request.POST["Records"] == "update"):
+                libName =  request.POST["libName"]
+                dayOfWeek = request.POST["dayOfWeek"]
+                time = request.POST["time"]
+                floorNum = request.POST["floorNum"]
+                section = request.POST["section"]
+                count = request.POST["count"]
+                # TODO: update record of Records table with primary key {libName, dayOfWeek, time, floorNum, section} with the above info
+            elif(request.POST["Records"] == "delete"):
+                libName =  request.POST["libName"]
+                dayOfWeek = request.POST["dayOfWeek"]
+                time = request.POST["time"]
+                floorNum = request.POST["floorNum"]
+                section = request.POST["section"]
+                # TODO: Delete Records entry with primary key {libName, dayOfWeek, time, floorNum, section}
+            else:
+                libName =  request.POST["libName"]
+                dayOfWeek = request.POST["dayOfWeek"]
+                time = request.POST["time"]
+                floorNum = request.POST["floorNum"]
+                section = request.POST["section"]
+                count = request.POST["count"]
+                # TODO: Check that entries are valid and add new Records entry to the database
+
+
+
+    # TODO: check if user is a admin and has access
+    global logged_in
+    is_admin = True
+    if(is_admin):
+        # TODO: fill library data with actual database info from the "Library" model. Take out dummy
+        # data when you are done.
+        library_data = {}
+        lib_vals = Library.objects.values()
+        for lib in lib_vals:
+            library_data[lib['libName']] = lib
+        print(library_data)
+
+        # TODO Fill Floor data from database. NOTE: The names should be libname#. Has to do with sorting.
+        floor_data = {
+            "ACES1": {
+                "libName" : "ACES",
+                "floorNum" : 2,
+                "section" : "2_A",
+                "numSeats" : 25,
+                "studyEnv" : "Group Study"
+            },
+            "UGL1": {
+                "libName" : "UGL",
+                "floorNum" : 3,
+                "section" : "3_B",
+                "numSeats" : 40,
+                "studyEnv" : "Quiet Closed Study"
+            },
+            "Grainger1": {
+                "libName" : "Grainger",
+                "floorNum" : 3,
+                "section" : "3_B",
+                "numSeats" : 40,
+                "studyEnv" : "Quiet Closed Study"
+            }
+        }
+
+        # TODO Fill Hours of Operation data from database. The names should be libname#. Has to do with sorting.
+        hoursOfOp = {
+            "grainger0": {
+                "libName" : "Grainger",
+                "dayOfWeek" : 0,
+                "openTime": 0,
+                "closeTime": 24
+            },
+            "grainger1": {
+                "libName" : "Grainger",
+                "dayOfWeek" : 1,
+                "openTime": 0,
+                "closeTime": 24
+            },
+            "aces0": {
+                "libName" : "ACES",
+                "dayOfWeek" : 0,
+                "openTime": 0,
+                "closeTime": 24
+            },
+            "aces1": {
+                "libName" : "ACES",
+                "dayOfWeek" : 1,
+                "openTime": 0,
+                "closeTime": 24
+            }
+        }
+
+        # TODO Fill record data from database. The names should be libname#. Has to do with sorting.
+        record_data = {
+            "grainger0": {
+                "libName" : "Grainger",
+                "floorNum" : 2,
+                "section" : "2_A",
+                "count" : 25,
+                "dayOfWeek": 0,
+                "time": 12
+            },
+            "grainger1": {
+                "libName" : "Grainger",
+                "floorNum" : 2,
+                "section" : "2_A",
+                "count" : 30,
+                "dayOfWeek": 3,
+                "time": 12
+            }
+        }
+
+        pass_data = {
+            "logged_in": logged_in,
+            "library_data" : library_data,
+            "floor_data": floor_data,
+            "hoursOfOp": hoursOfOp,
+            "record_data" : record_data
+        }
+        return render(request, "update/update.html", pass_data)
+    else: # not allowed to be here!
+        return render(request, "search/search.html", {"logged_in":logged_in})

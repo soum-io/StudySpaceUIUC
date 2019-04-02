@@ -14,22 +14,22 @@
 <body class="bg-image bg">
         <div>
             <div class="ui inverted menu fixme">
-                <a class = "item">
+                <div class = "item">
                   <i class="book icon"></i>&nbsp;StudySpace
-                </a>
+                </div>
               <a class="item" href="/search">
                 Search
               </a>
               <div class="right menu">
-                {% if isLoggedIn == True %}
+                {% if logged_in.isLoggedIn == True %}
                     <a class="item">
-                        Hello, {{username}}.&nbsp;<i class="cog icon"></i>
+                        Hello, {{logged_in.username}}.&nbsp;<i class="cog icon"></i>
                     </a>
                     <a class="ui item" href="/">
                         Logout
                     </a>
                 {% endif %}
-                {% if isLoggedIn == False %}
+                {% if logged_in.isLoggedIn == False %}
                     <a class="ui item" href="/">
                         Login
                     </a>

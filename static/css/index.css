@@ -182,10 +182,6 @@ img.bg {
 
 }
 
-#Library_info{
-	margin-top: 10px;
-}
-
 #Info_subtitles{
 	font-size:13pt;
 }
@@ -194,28 +190,33 @@ img.bg {
 	font-weight: bold;
 }
 
-.library_toggle_wrapper
-{
-}
-
-#library_wrap
+.update_wrap
 {
     background: #99ccff;
-    width: 80%; max-height: 50%;
+    width: 80%; max-height: 60%;
     margin-left: auto;
     margin-right: auto;
     border-radius: 10px;
     margin-top: 0%;
     padding: 10px;
-    overflow-y:scroll;
+    overflow: auto;
 }
 
 .all_changes
 {
-    margin-top: 0px
+    margin-top: 0px;
+    /* display: flex; */
+    overflow: auto;
+    height: calc(100% - 44px); /*bc nav bar takes up top 44 pixels */
 }
 
-#library_wrap_toggle
+.update_section {
+    margin-bottom: 25px;
+    /* height: calc(100% - 100px); */
+    overflow: auto;
+}
+
+.update_wrap_toggle
 {
     display: block;
     width: 80%;
@@ -232,16 +233,13 @@ img.bg {
     border-radius: 10px;
 }
 
-#library_wrap_toggle:hover
+.update_wrap_toggle:hover
 {
     text-decoration:none;
     background: #3366cc;
+    color: white;
 }
 
-#library_data_card
-{
-
-}
 
 #form_button
 {
@@ -256,7 +254,12 @@ img.bg {
     margin: 0px;
 }
 
-.containerLibrary .contentLibrary {
+.containerUpdate .contentUpdate {
     display: none;
     padding : 5px;
+}
+
+#addNewButton
+{
+    background-color: #12bc45;
 }

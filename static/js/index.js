@@ -294,25 +294,28 @@ function bubble_Sort(){
 
 }
 
+// library data updates
 jQuery(document).ready(function($)
 {
-  $("#library_wrap_toggle").click(function()
+  var toggle_name = "library";
+  var display_name = "Library"
+  var header_name = "Library"
+  $("#"+toggle_name+"_wrap_toggle").click(function()
   {
 
-    $("#library_wrap").slideToggle( "slow");
+    $("#"+toggle_name+"_wrap").slideToggle( "slow");
 
-	  if ($("#library_wrap_toggle").text() == "Edit Library Data")
+	  if ($("#"+toggle_name+"_wrap_toggle").text() == "Edit "+display_name+" Data")
       {
-        $("#library_wrap_toggle").html("Hide Library Data")
+        $("#"+toggle_name+"_wrap_toggle").html("Hide "+display_name+" Data")
       }
 	  else
       {
-        $("#library_wrap_toggle").text("Edit Library Data")
+        $("#"+toggle_name+"_wrap_toggle").text("Edit "+display_name+" Data")
       }
-
   });
 
-  $(".headerLibrary").click(function () {
+  $(".header"+header_name).click(function () {
 
       $header = $(this);
       //getting the next element
@@ -323,10 +326,142 @@ jQuery(document).ready(function($)
           //change text of header based on visibility of content div
           $header.text(function () {
               //change text based on condition
-              return $content.is(":visible") ? "Cancel Add New Library Entry" : "Add New Library Entry";
+              return $content.is(":visible") ? "Cancel Add New "+display_name+" Entry" : "Add New "+display_name+" Entry";
           });
       });
-
   });
 
+});
+
+// Floor/section data updates
+jQuery(document).ready(function($)
+{
+	var toggle_name = "floor";
+	var display_name = "Floor/Section"
+	var header_name = "Floor"
+	$("#"+toggle_name+"_wrap_toggle").click(function()
+	{
+
+	  $("#"+toggle_name+"_wrap").slideToggle( "slow");
+
+		if ($("#"+toggle_name+"_wrap_toggle").text() == "Edit "+display_name+" Data")
+		{
+		  $("#"+toggle_name+"_wrap_toggle").html("Hide "+display_name+" Data")
+		}
+		else
+		{
+		  $("#"+toggle_name+"_wrap_toggle").text("Edit "+display_name+" Data")
+		}
+	});
+
+	$(".header"+header_name).click(function () {
+
+		$header = $(this);
+		//getting the next element
+		$content = $header.next();
+		//open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+		$content.slideToggle(500, function () {
+			//execute this after slideToggle is done
+			//change text of header based on visibility of content div
+			$header.text(function () {
+				//change text based on condition
+				return $content.is(":visible") ? "Cancel Add New "+display_name+" Entry" : "Add New "+display_name+" Entry";
+			});
+		});
+	});
+});
+
+// hoursOfOp data updates
+jQuery(document).ready(function($)
+{
+	var toggle_name = "hours";
+	var display_name = "Hours of Operation"
+	var header_name = "Hours"
+	$("#"+toggle_name+"_wrap_toggle").click(function()
+	{
+
+	  $("#"+toggle_name+"_wrap").slideToggle( "slow");
+
+		if ($("#"+toggle_name+"_wrap_toggle").text() == "Edit "+display_name+" Data")
+		{
+		  $("#"+toggle_name+"_wrap_toggle").html("Hide "+display_name+" Data")
+		}
+		else
+		{
+		  $("#"+toggle_name+"_wrap_toggle").text("Edit "+display_name+" Data")
+		}
+	});
+
+	$(".header"+header_name).click(function () {
+
+		$header = $(this);
+		//getting the next element
+		$content = $header.next();
+		//open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+		$content.slideToggle(500, function () {
+			//execute this after slideToggle is done
+			//change text of header based on visibility of content div
+			$header.text(function () {
+				//change text based on condition
+				return $content.is(":visible") ? "Cancel Add New "+display_name+" Entry" : "Add New "+display_name+" Entry";
+			});
+		});
+	});
+});
+
+// record data updates
+jQuery(document).ready(function($)
+{
+	var toggle_name = "records";
+	var display_name = "Records"
+	var header_name = "records"
+	$("#"+toggle_name+"_wrap_toggle").click(function()
+	{
+
+	  $("#"+toggle_name+"_wrap").slideToggle( "slow");
+
+		if ($("#"+toggle_name+"_wrap_toggle").text() == "Edit "+display_name+" Data")
+		{
+		  $("#"+toggle_name+"_wrap_toggle").html("Hide "+display_name+" Data")
+		}
+		else
+		{
+		  $("#"+toggle_name+"_wrap_toggle").text("Edit "+display_name+" Data")
+		}
+	});
+
+	$(".header"+header_name).click(function () {
+
+		$header = $(this);
+		//getting the next element
+		$content = $header.next();
+		//open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+		$content.slideToggle(500, function () {
+			//execute this after slideToggle is done
+			//change text of header based on visibility of content div
+			$header.text(function () {
+				//change text based on condition
+				return $content.is(":visible") ? "Cancel Add New "+display_name+" Entry" : "Add New "+display_name+" Entry";
+			});
+		});
+	});
+});
+
+// general functions
+jQuery(document).ready(function($)
+{
+	$(".showHideCard").click(function () {
+
+		$header = $(this);
+		//getting the next element
+		$content = $header.next();
+		//open up the content needed - toggle the slide- if visible, slide up, if not slidedown.
+		$content.slideToggle(500, function () {
+			//execute this after slideToggle is done
+			//change text of header based on visibility of content div
+			$header.text(function () {
+			});
+		});
+
+	});
 });
