@@ -165,6 +165,8 @@ def results_view(request, *args, **kwargs):
         result["floor"] = section['floorNum']
         result["section"] = section['section']
         result["dist"] = library_df[library_df['libName'] == section['libName']].iloc[0]['Distance']
+        # TODO make sure this is the correct rank based on what ever alg'm we use 
+        result["rank"] = count
         if environment == "Quiet Open Study" or environment == "Quiet Closed Study":
             result["quiet"] = True
         else:
