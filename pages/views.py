@@ -311,99 +311,16 @@ def update_view(request, *args, **kwargs):
         print(library_data)
 
         # TODO Fill Floor data from database. NOTE: The names should be libname#. Has to do with sorting.
-        floor_data = {
-            "UGL quiet": {
-                "libName" : "UGL",
-                "floorNum" : 1,
-                "section" : "ALL",
-                "numSeats" : 760,
-                "studyEnv" : "Quiet Open Study"
-            },
-            "UGL collaborative": {
-                "libName" : "UGL",
-                "floorNum" : 2,
-                "section" : "ALL",
-                "numSeats" : 384,
-                "studyEnv" : "collaborative"
-            },
-            "Main Library1": {
-                "libName" : "Main Library",
-                "floorNum" : 2,
-                "section" : "All",
-                "numSeats" : 434,
-                "studyEnv" : "Quiet Open Study"
-            },
-            "Main Library1": {
-                "libName" : "Main Library",
-                "floorNum" : 1,
-                "section" : "All",
-                "numSeats" : 264,
-                "studyEnv" : "Quiet Open Study"
-            },
-            "Chemistry Library": {
-                "libName" : "Chemistry Library",
-                "floorNum" : 1,
-                "section" : "Noyes",
-                "numSeats" : 77,
-                "studyEnv" : "Quiet Closed Study"
-            },
-            "Grainger4West": {
-                "libName" : "Grainger",
-                "floorNum" : 4,
-                "section" : "West",
-                "numSeats" : 107,
-                "studyEnv" : "collaborative"
-            },
-            "Grainger4Central": {
-                "libName" : "Grainger",
-                "floorNum" : 4,
-                "section" : "central",
-                "numSeats" : 102,
-                "studyEnv" : "collaborative"
-            },
-            "Grainger4EWS": {
-                "libName" : "Grainger",
-                "floorNum" : 4,
-                "section" : "EWS",
-                "numSeats" : 100,
-                "studyEnv" : "EWS"
-            },
-            "Grainger4East": {
-                "libName" : "Grainger",
-                "floorNum" : 4,
-                "section" : "East",
-                "numSeats" : 32,
-                "studyEnv" : "collaborative"
-            },
-            "Grainger3": {
-                "libName" : "Grainger",
-                "floorNum" : 3,
-                "section" : "ALL",
-                "numSeats" : 85,
-                "studyEnv" : "Quiet Closed Study"
-            },
-            "Grainger2": {
-                "libName" : "Grainger",
-                "floorNum" : 2,
-                "section" : "ALL",
-                "numSeats" : 557,
-                "studyEnv" : "Quiet Closed Study"
-            },
-            "Grainger1W": {
-                "libName" : "Grainger",
-                "floorNum" : 1,
-                "section" : "West",
-                "numSeats" : 0,
-                "studyEnv" : "Group Study"
-            },
-            "Grainger1EWS": {
-                "libName" : "Grainger",
-                "floorNum" : 1,
-                "section" : "EWS",
-                "numSeats" : 0,
-                "studyEnv" : "EWS"
-            }
-        }
+        floor_data = {}
+        floor_section_vals = FloorSection.objects.values()
+        section_counts = {}
+        for floor_section in floor_section_vals:
+            if floor_section["libName"] not in section_counts:
+                section_counts[floor_section["libName"]] = 1
+            key = floor_section['libName'] + str(floor_section['floorNum']) + str(section_counts[floor_section["libName"]])
+            floor_data[key] = floor_section
+            section_counts[floor_section["libName"]]+=1
+        print(floor_data)
 
         # TODO Fill Hours of Operation data from database. The names should be libname#. Has to do with sorting.
         #0 = Sunday, 6 = Saturday
