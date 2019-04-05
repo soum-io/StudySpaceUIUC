@@ -16,6 +16,19 @@ logged_in = {"isLoggedIn": False, "username": ""}
 API_key = 'AIzaSyBzozWYI3q9hIHEOh1arRxsMLLzYx83MLQ'
 GOOGLE_MAPS_API_URL = 'http://maps.googleapis.com/maps/api/geocode/json'
 
+
+# convert string time to military time
+def convertTime(string_time):
+    num, half = string_time.split(" ")
+    add_on = 0
+    if(half == "PM"):
+        add_on = 1200
+    hour, min = num.split(":")
+    hour = int(hour)
+    min = int(min)
+    finalTime = hour*100+min+add_on
+    return finalTime
+
 # Create your views here.
 def login_view(request, *args, **kwargs):
     global logged_in
@@ -96,6 +109,7 @@ def results_view(request, *args, **kwargs):
     groupSize = request.GET["groupSize"] # will be a digit in string format
     forDate = request.GET["forDate"] # format is "mm/dd/yyyy"
     forTime = request.GET["forTime"] # format is "01:00 AM"
+    forTimeInt = convertTime(forTime) # int version of requested time. so "05:30 PM" becomes 1730.
     environment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", or "Group Study"
 
     # TODO: Use search information to get reccomendations. Each reccomendation need to contain the following information:
