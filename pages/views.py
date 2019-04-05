@@ -99,7 +99,9 @@ def search_view(request, *args, **kwargs):
                 return render(request, "login/login.html", {"logged_in":logged_in})
 
     else: # get from anon or entering another search from results page user
-        return render(request, "search/search.html", {"logged_in":logged_in})
+        default_address = ""
+        #TODO if user is logged in - fill in their default address to defailt address var.
+        return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
 
 def results_view(request, *args, **kwargs):
     global logged_in
@@ -165,7 +167,7 @@ def results_view(request, *args, **kwargs):
         result["floor"] = section['floorNum']
         result["section"] = section['section']
         result["dist"] = library_df[library_df['libName'] == section['libName']].iloc[0]['Distance']
-        # TODO make sure this is the correct rank based on what ever alg'm we use 
+        # TODO make sure this is the correct rank based on what ever alg'm we use
         result["rank"] = count
         if environment == "Quiet Open Study" or environment == "Quiet Closed Study":
             result["quiet"] = True
@@ -274,20 +276,17 @@ def update_view(request, *args, **kwargs):
 
         elif("Records" in request.POST):
             if(request.POST["Records"] == "update"):
+                recordID =  request.POST["recordID"]
                 libName =  request.POST["libName"]
                 dayOfWeek = request.POST["dayOfWeek"]
                 time = request.POST["time"]
                 floorNum = request.POST["floorNum"]
                 section = request.POST["section"]
                 count = request.POST["count"]
-                # TODO: update record of Records table with primary key {libName, dayOfWeek, time, floorNum, section} with the above info
+                # TODO: update record of Records table with primary key "recordID" with the above info
             elif(request.POST["Records"] == "delete"):
-                libName =  request.POST["libName"]
-                dayOfWeek = request.POST["dayOfWeek"]
-                time = request.POST["time"]
-                floorNum = request.POST["floorNum"]
-                section = request.POST["section"]
-                # TODO: Delete Records entry with primary key {libName, dayOfWeek, time, floorNum, section}
+                recordID =  request.POST["recordID"]
+                # TODO: Delete Records entry with primary key "recordID"
             else:
                 libName =  request.POST["libName"]
                 dayOfWeek = request.POST["dayOfWeek"]
@@ -295,7 +294,7 @@ def update_view(request, *args, **kwargs):
                 floorNum = request.POST["floorNum"]
                 section = request.POST["section"]
                 count = request.POST["count"]
-                # TODO: Check that entries are valid and add new Records entry to the database
+                # TODO: Check that entries are valid and add new Records entry to the database, and create a recordID for it.
 
 
 
@@ -629,7 +628,8 @@ def update_view(request, *args, **kwargs):
                 "section" : "2_A",
                 "count" : 25,
                 "dayOfWeek": 0,
-                "time": 12
+                "time": 12,
+                "recordID" : 1
             },
             "grainger1": {
                 "libName" : "Grainger",
@@ -637,7 +637,8 @@ def update_view(request, *args, **kwargs):
                 "section" : "2_A",
                 "count" : 30,
                 "dayOfWeek": 3,
-                "time": 12
+                "time": 12,
+                "recordID" : 2
             }
         }
 
