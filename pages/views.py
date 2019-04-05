@@ -206,11 +206,18 @@ def update_view(request, *args, **kwargs):
                 section = request.POST["section"]
                 numSeats = request.POST["numSeats"]
                 studyEnv = request.POST["studyEnv"]
+                update_query = 'UPDATE pages_FloorSection SET "numSeats" = %s, "studyEnv" = %s WHERE "libName" = %s and "floorNum" = %s and "section" = %s;'
+                with connection.cursor() as cursor:
+                    cursor.execute(update_query, (numSeats, studyEnv, libName, floorNum, section))
+
                 # TODO: update record FloorSection with primary key {libName, floornum, and section} with the above info
             elif(request.POST["Floor"] == "delete"):
                 libName =  request.POST["libName"]
                 floorNum = request.POST["floorNum"]
                 section = request.POST["section"]
+                delete_query = 'DELETE FROM pages_FloorSection WHERE "libname" = %s and "floorNum" = %s and "section" = %s;'
+                with connection.cursor() as cursor:
+                    cursor.execute(delete_query, (libName, floorNum, section))
                 # TODO: Delete FloorSection with primary key {libName, floornum, and section}
             else:
                 libName =  request.POST["libName"]
@@ -218,6 +225,9 @@ def update_view(request, *args, **kwargs):
                 section = request.POST["section"]
                 numSeats = request.POST["numSeats"]
                 studyEnv = request.POST["studyEnv"]
+                insert_query = 'INSERT INTO pages_FloorSection ("libName", "floorNum", "section", "numSeats", "studyEnv") VALUES (%s, %s, %s, %s, %s);'
+                with connection.cursor() as cursor:
+                    cursor.execute(insert_query, (libName, floorNum, section, numSeats, studyEnv))
                 # TODO: Check that entries are valid and add new FloorSection to the database
 
         elif("Hours" in request.POST):
@@ -226,16 +236,25 @@ def update_view(request, *args, **kwargs):
                 dayOfWeek = request.POST["dayOfWeek"]
                 openTime = request.POST["openTime"]
                 closeTime = request.POST["closeTime"]
+                update_query = 'UPDATE pages_hours SET "openTime" = %s, "closeTime" = %s WHERE "libName" = %s and "dayOfWeek" = %s;'
+                with connection.cursor() as cursor:
+                    cursor.execute(update_query, (openTime, closeTime, libName, dayOfWeek))
                 # TODO: update record hours of operation with primary key {libName, dayOfWeek} with the above info
             elif(request.POST["Hours"] == "delete"):
                 libName =  request.POST["libName"]
                 dayOfWeek = request.POST["dayOfWeek"]
+                delete_query = 'DELETE FROM pages_hours WHERE "libname" = %s and "dayOfWeek" = %s;'
+                with connection.cursor() as cursor:
+                    cursor.execute(delete_query, (libName, dayOfWeek))
                 # TODO: Delete hours of operation with primary key {libName, dayOfWeek}
             else:
                 libName =  request.POST["libName"]
                 dayOfWeek = request.POST["dayOfWeek"]
                 openTime = request.POST["openTime"]
                 closeTime = request.POST["closeTime"]
+                insert_query = 'INSERT INTO pages_hours ("libName", "dayOfWeek", "openTime", "closeTime") VALUES (%s, %s, %s, %s);'
+                with connection.cursor() as cursor:
+                    cursor.execute(insert_query, (libName, dayOfWeek, openTime, closeTime))
                 # TODO: Check that entries are valid and add new hours of operation to the database
 
         elif("Records" in request.POST):
@@ -279,54 +298,311 @@ def update_view(request, *args, **kwargs):
 
         # TODO Fill Floor data from database. NOTE: The names should be libname#. Has to do with sorting.
         floor_data = {
-            "ACES1": {
-                "libName" : "ACES",
-                "floorNum" : 2,
-                "section" : "2_A",
-                "numSeats" : 25,
-                "studyEnv" : "Group Study"
-            },
-            "UGL1": {
+            "UGL quiet": {
                 "libName" : "UGL",
-                "floorNum" : 3,
-                "section" : "3_B",
-                "numSeats" : 40,
+                "floorNum" : "quiet",
+                "section" : NULL,
+                "numSeats" : 760,
+                "studyEnv" : "Quiet Open Study"
+            },
+            "UGL collaborative": {
+                "libName" : "UGL",
+                "floorNum" : "collaborative",
+                "section" : NULL,
+                "numSeats" : 384,
+                "studyEnv" : "collaborative"
+            },
+            "Main Library1": {
+                "libName" : "Main Library",
+                "floorNum" : 2,
+                "section" : "All",
+                "numSeats" : 434,
+                "studyEnv" : "Quiet Open Study"
+            },
+            "Main Library1": {
+                "libName" : "Main Library",
+                "floorNum" : 1,
+                "section" : "All",
+                "numSeats" : 264,
+                "studyEnv" : "Quiet Open Study"
+            },
+            "Chemistry Library": {
+                "libName" : "Chemistry Library",
+                "floorNum" : 1,
+                "section" : "Noyes",
+                "numSeats" : 77,
                 "studyEnv" : "Quiet Closed Study"
             },
-            "Grainger1": {
+            "Grainger4West": {
+                "libName" : "Grainger",
+                "floorNum" : 4,
+                "section" : "West",
+                "numSeats" : 107,
+                "studyEnv" : "collaborative"
+            },
+            "Grainger4Central": {
+                "libName" : "Grainger",
+                "floorNum" : 4,
+                "section" : "central",
+                "numSeats" : 102,
+                "studyEnv" : "collaborative"
+            },
+            "Grainger4EWS": {
+                "libName" : "Grainger",
+                "floorNum" : 4,
+                "section" : "EWS",
+                "numSeats" : 100,
+                "studyEnv" : "EWS"
+            },
+            "Grainger4East": {
+                "libName" : "Grainger",
+                "floorNum" : 4,
+                "section" : "East",
+                "numSeats" : 32,
+                "studyEnv" : "collaborative"
+            },
+            "Grainger3": {
                 "libName" : "Grainger",
                 "floorNum" : 3,
-                "section" : "3_B",
-                "numSeats" : 40,
+                "section" : NULL,
+                "numSeats" : 85,
                 "studyEnv" : "Quiet Closed Study"
+            },
+            "Grainger2": {
+                "libName" : "Grainger",
+                "floorNum" : 2,
+                "section" : NULL,
+                "numSeats" : 557,
+                "studyEnv" : "Quiet Closed Study"
+            },
+            "Grainger1W": {
+                "libName" : "Grainger",
+                "floorNum" : 1,
+                "section" : "West",
+                "numSeats" : 0,
+                "studyEnv" : "Group Study"
+            },
+            "Grainger1EWS": {
+                "libName" : "Grainger",
+                "floorNum" : 1,
+                "section" : "EWS",
+                "numSeats" : 0,
+                "studyEnv" : "EWS"
             }
         }
 
         # TODO Fill Hours of Operation data from database. The names should be libname#. Has to do with sorting.
+        #0 = Sunday, 6 = Saturday
         hoursOfOp = {
-            "grainger0": {
+            "Grainger6": {
                 "libName" : "Grainger",
-                "dayOfWeek" : 0,
+                "dayOfWeek" : 6,
                 "openTime": 0,
-                "closeTime": 24
+                "closeTime": 2400
             },
-            "grainger1": {
+            "Grainger5": {
+                "libName" : "Grainger",
+                "dayOfWeek" : 5,
+                "openTime": 0,
+                "closeTime": 2400
+            },
+            "Grainger4": {
+                "libName" : "Grainger",
+                "dayOfWeek" : 4,
+                "openTime": 0,
+                "closeTime": 2400
+            },
+            "Grainger3": {
+                "libName" : "Grainger",
+                "dayOfWeek" : 3,
+                "openTime": 0,
+                "closeTime": 2400
+            },
+            "Grainger2": {
+                "libName" : "Grainger",
+                "dayOfWeek" : 2,
+                "openTime": 0,
+                "closeTime": 2400
+            },
+            "Grainger1": {
                 "libName" : "Grainger",
                 "dayOfWeek" : 1,
                 "openTime": 0,
-                "closeTime": 24
+                "closeTime": 2400
             },
-            "aces0": {
-                "libName" : "ACES",
+            "Grainger0": {
+                "libName" : "Grainger",
                 "dayOfWeek" : 0,
                 "openTime": 0,
-                "closeTime": 24
+                "closeTime": 2400
             },
-            "aces1": {
-                "libName" : "ACES",
+            "Chem6": {
+                "libName" : "Chemistry Library",
+                "dayOfWeek" : 6,
+                "openTime": 1300,
+                "closeTime": 1700
+            },
+            "Chem5": {
+                "libName" : "Chemistry Library",
+                "dayOfWeek" : 5,
+                "openTime": 900,
+                "closeTime": 1700
+            },
+            "Chem4": {
+                "libName" : "Chemistry Library",
+                "dayOfWeek" : 4,
+                "openTime": 900,
+                "closeTime": 2200
+            },
+            "Chem3": {
+                "libName" : "Chemistry Library",
+                "dayOfWeek" : 3,
+                "openTime": 900,
+                "closeTime": 2200
+            },
+            "Chem2": {
+                "libName" : "Chemistry Library",
+                "dayOfWeek" : 2,
+                "openTime": 900,
+                "closeTime": 1700
+            },
+            "Chem1": {
+                "libName" : "Chemistry Library",
                 "dayOfWeek" : 1,
+                "openTime": 900,
+                "closeTime": 1700
+            },
+            "Chem0": {
+                "libName" : "Chemistry Library",
+                "dayOfWeek" : 0,
+                "openTime": 1300,
+                "closeTime": 2200
+            },
+            "Main6": {
+                "libName" : "Main Library",
+                "dayOfWeek" : 6,
                 "openTime": 0,
-                "closeTime": 24
+                "closeTime": 0
+            },
+            "Main5": {
+                "libName" : "Main Library",
+                "dayOfWeek" : 5,
+                "openTime": 850,
+                "closeTime": 1800
+            },
+            "Main4": {
+                "libName" : "Main Library",
+                "dayOfWeek" : 4,
+                "openTime": 850,
+                "closeTime": 2200
+            },
+            "Main3": {
+                "libName" : "Main Library",
+                "dayOfWeek" : 3,
+                "openTime": 850,
+                "closeTime": 2200
+            },
+            "Main2": {
+                "libName" : "Main Library",
+                "dayOfWeek" : 2,
+                "openTime": 850,
+                "closeTime": 1700
+            },
+            "Main1": {
+                "libName" : "Main Library",
+                "dayOfWeek" : 1,
+                "openTime": 850,
+                "closeTime": 1700
+            },
+            "Main0": {
+                "libName" : "Main Library",
+                "dayOfWeek" : 0,
+                "openTime": 0,
+                "closeTime": 0
+            },
+            "UGL6": {
+                "libName" : "UGL",
+                "dayOfWeek" : 6,
+                "openTime": 0,
+                "closeTime": 0
+            },
+            "UGL5": {
+                "libName" : "UGL",
+                "dayOfWeek" : 5,
+                "openTime": 750,
+                "closeTime": 1900
+            },
+            "UGL4": {
+                "libName" : "UGL",
+                "dayOfWeek" : 4,
+                "openTime": 750,
+                "closeTime": 1450
+            },
+            "UGL3": {
+                "libName" : "UGL",
+                "dayOfWeek" : 3,
+                "openTime": 750,
+                "closeTime": 1450
+            },
+            "UGL2": {
+                "libName" : "UGL",
+                "dayOfWeek" : 2,
+                "openTime": 850,
+                "closeTime": 1700
+            },
+            "UGL1": {
+                "libName" : "UGL",
+                "dayOfWeek" : 1,
+                "openTime": 850,
+                "closeTime": 1700
+            },
+            "UGL0": {
+                "libName" : "UGL",
+                "dayOfWeek" : 0,
+                "openTime": 0,
+                "closeTime": 0
+            },
+            "ACES6": {
+                "libName" : "ACES Library",
+                "dayOfWeek" : 6,
+                "openTime": 0,
+                "closeTime": 0
+            },
+            "ACES5": {
+                "libName" : "ACES Library",
+                "dayOfWeek" : 5,
+                "openTime": 850,
+                "closeTime": 1900
+            },
+            "ACES4": {
+                "libName" : "ACES Library",
+                "dayOfWeek" : 4,
+                "openTime": 850,
+                "closeTime": 1450
+            },
+            "ACES3": {
+                "libName" : "ACES Library",
+                "dayOfWeek" : 3,
+                "openTime": 850,
+                "closeTime": 1450
+            },
+            "ACES2": {
+                "libName" : "ACES Library",
+                "dayOfWeek" : 2,
+                "openTime": 850,
+                "closeTime": 1700
+            },
+            "ACES1": {
+                "libName" : "ACES Library",
+                "dayOfWeek" : 1,
+                "openTime": 850,
+                "closeTime": 1700
+            },
+            "ACES0": {
+                "libName" : "ACES Library",
+                "dayOfWeek" : 0,
+                "openTime": 0,
+                "closeTime": 0
             }
         }
 
