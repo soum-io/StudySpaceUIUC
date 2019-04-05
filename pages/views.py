@@ -88,7 +88,6 @@ def search_view(request, *args, **kwargs):
     else: # get from anon or entering another search from results page user
         return render(request, "search/search.html", {"logged_in":logged_in})
 
-
 def results_view(request, *args, **kwargs):
     global logged_in
     print(request.GET)
@@ -300,15 +299,15 @@ def update_view(request, *args, **kwargs):
         floor_data = {
             "UGL quiet": {
                 "libName" : "UGL",
-                "floorNum" : "quiet",
-                "section" : NULL,
+                "floorNum" : 1,
+                "section" : "ALL",
                 "numSeats" : 760,
                 "studyEnv" : "Quiet Open Study"
             },
             "UGL collaborative": {
                 "libName" : "UGL",
-                "floorNum" : "collaborative",
-                "section" : NULL,
+                "floorNum" : 2,
+                "section" : "ALL",
                 "numSeats" : 384,
                 "studyEnv" : "collaborative"
             },
@@ -364,14 +363,14 @@ def update_view(request, *args, **kwargs):
             "Grainger3": {
                 "libName" : "Grainger",
                 "floorNum" : 3,
-                "section" : NULL,
+                "section" : "ALL",
                 "numSeats" : 85,
                 "studyEnv" : "Quiet Closed Study"
             },
             "Grainger2": {
                 "libName" : "Grainger",
                 "floorNum" : 2,
-                "section" : NULL,
+                "section" : "ALL",
                 "numSeats" : 557,
                 "studyEnv" : "Quiet Closed Study"
             },
