@@ -396,7 +396,7 @@
                               <div class="ui label">
                                 Library Name
                               </div>
-                              <input type="text" name="libName" placeholder="Library Name (Part of Unique Identifier)">
+                              <input type="text" name="libName" placeholder="Library Name">
                             </div>
                         </div>
                         <div class="field">
@@ -404,7 +404,7 @@
                               <div class="ui label">
                                 Floor Number
                               </div>
-                              <input type="number" name="floorNum" placeholder="Floor Number (Part of Unique Identifier)">
+                              <input type="number" name="floorNum" placeholder="Floor Number">
                             </div>
                         </div>
                         <div class="field">
@@ -412,7 +412,7 @@
                               <div class="ui label">
                                 Section
                               </div>
-                              <input type="text" name="section" placeholder="Section (Part of Unique Identifier)">
+                              <input type="text" name="section" placeholder="Section">
                             </div>
                         </div>
                         <div class="field">
@@ -420,7 +420,7 @@
                               <div class="ui label">
                                 Day of Week (1-7, with Monday = 1)
                               </div>
-                              <input type="number" name="dayOfWeek" placeholder="Day of Week (Part of Unique Identifier)">
+                              <input type="number" name="dayOfWeek" placeholder="Day of Week">
                             </div>
                         </div>
                         <div class="field">
@@ -428,7 +428,7 @@
                               <div class="ui label">
                                 Time of Day (Hour between 0-24)
                               </div>
-                              <input type="number" name="time" placeholder="Time of Day (Part of Unique Identifier)">
+                              <input type="number" name="time" placeholder="Time of Day">
                             </div>
                         </div>
                         <div class="field">
@@ -454,12 +454,20 @@
                     </div>
                     <form action="/update/" method="POST" class="ui large form" name="Records" style="display: none;"> {% csrf_token %}
                       <div class="ui stacked secondary segment">
+                          <div class="field">
+                              <div class="ui labeled input">
+                                <div class="ui label">
+                                  RecordID
+                                </div>
+                                <input type="text" name="recordID" value="{{values.recordID}}" readonly>
+                              </div>
+                          </div>
                         <div class="field">
                             <div class="ui labeled input">
                               <div class="ui label">
                                 Library Name
                               </div>
-                              <input type="text" name="libName" value="{{values.libName}}" readonly>
+                              <input type="text" name="libName" value="{{values.libName}}">
                             </div>
                         </div>
                         <div class="field">
@@ -467,7 +475,7 @@
                               <div class="ui label">
                                 Floor Number
                               </div>
-                              <input type="number" name="floorNum" value="{{values.floorNum}}" readonly>
+                              <input type="number" name="floorNum" value="{{values.floorNum}}">
                             </div>
                         </div>
                         <div class="field">
@@ -475,7 +483,7 @@
                               <div class="ui label">
                                 Section
                               </div>
-                              <input type="text" name="section" value="{{values.section}}" readonly>
+                              <input type="text" name="section" value="{{values.section}}">
                             </div>
                         </div>
                         <div class="field">
@@ -483,7 +491,7 @@
                               <div class="ui label">
                                 Day of Week (1-7, with Monday = 1)
                               </div>
-                              <input type="number" name="dayOfWeek" value="{{values.dayOfWeek}}" readonly>
+                              <input type="number" name="dayOfWeek" value="{{values.dayOfWeek}}">
                             </div>
                         </div>
                         <div class="field">
@@ -491,7 +499,7 @@
                               <div class="ui label">
                                 Time of Day (Hour between 0-24)
                               </div>
-                              <input type="number" name="time" value="{{values.time}}" readonly>
+                              <input type="number" name="time" value="{{values.time}}">
                             </div>
                         </div>
                         <div class="field">
