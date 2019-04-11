@@ -1,6 +1,7 @@
 from django.db import models
 import uuid
 from datetime import datetime
+from django.utils import timezone
 # Create your models here.
 
 class Student(models.Model):
@@ -10,6 +11,7 @@ class Student(models.Model):
     mainAddress = models.CharField(max_length=255)
     favLibrary = models.CharField(max_length=255)
     major = models.CharField(max_length=255)
+    isAdmin = models.BooleanField(default=False)
 
 class Request(models.Model):
     requestID = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
@@ -41,17 +43,16 @@ class hoursOfOp(models.Model):
         unique_together = (('libName', 'dayOfWeek'),)
 
 class recordData(models.Model):
-    date = models.DateTimeField(auto_now_add=True, blank=True, primary_key=True)
-    count = models.IntegerField()
-
-                    # "libName" : "Grainger",
-                    # "floorNum" : 2,
-                    # "section" : "2_A",
-                    # "count" : 25,
-                    # "dayOfWeek": 0,
-                    # "time": 12
+    recordID = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    entryTime = models.DateTimeField(default=timezone.now, blank=False)
+    libName = models.CharField(max_length=255)
+    floorNum = models.IntegerField(default=0)
+    section = models.CharField(max_length=255)
+    dayOfWeek = models.IntegerField()
+    time = models.IntegerField()
+    count = models.IntegerField(default=0)
 
 class specialDateRanges(models.Model):
     eventName = models.CharField(max_length=255)
-    dateTimeStart = models.DateTimeField(default=datetime.now(), blank=False)
-    dateTimeEnd = models.DateTimeField(default=datetime.now(), blank=False)
+    dateTimeStart = models.DateTimeField(default=timezone.now, blank=False)
+    dateTimeEnd = models.DateTimeField(default=timezone.now, blank=False)
