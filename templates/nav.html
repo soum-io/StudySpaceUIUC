@@ -26,12 +26,12 @@
                         Hello, {{logged_in.username}}.&nbsp;<i class="cog icon"></i>
                     </a>
 
-                    <form class="ui large form" id="myboxes">
+                    <form action="/search/" method="POST" class="ui large form" id="myboxes"> {% csrf_token %}
                       <div class="ui stacked secondary segment" >
                         <div class="field">
                           <div class="ui left icon input">
                             <i class="home icon"></i>
-                            <input type="text" placeholder="Address">
+                            <input type="text" name="UpdatedAddress" placeholder="Update Your Default Address" id="location_autocomplete">
                           </div>
                         </div>
 

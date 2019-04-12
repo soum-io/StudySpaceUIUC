@@ -269,6 +269,7 @@ img.bg {
 	padding-top: 10px;
 	width: 30vw;
 	min-width: 295px;
-	position: inherit;
+	position: absolute;
 	display: none;
+    z-index: 100;
 }

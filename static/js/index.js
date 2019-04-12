@@ -48,6 +48,18 @@ function createElement(lib,floor,section,distance,isquiet,chance,rank,link){
 	    card_template.getElementById("reference_item").id = 'Main';
 	    card_template.getElementById("LibraryNameText").innerText = "Main Library";
 	    registered = true
+	}else if (lib == "Chem"){
+		console.log('Chem')
+	    card_template.getElementById("Library_image1").src = src="/static/img/LibraryImages/Chem/Chem1.jpg";
+	    card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/Chem/Chem2.jpg";
+	    card_template.getElementById("reference_item").id = 'Chem';
+	    card_template.getElementById("LibraryNameText").innerText = "Chemistry Library";
+	}else if (lib == "Aces"){
+		console.log('Aces')
+	    card_template.getElementById("Library_image1").src = src="/static/img/LibraryImages/Aces/Aces1.jpg";
+	    card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/Aces/Aces1.jpg";
+	    card_template.getElementById("reference_item").id = 'Aces';
+	    card_template.getElementById("LibraryNameText").innerText = "ACES Library";
 	}else{
 	    console.log('Library not defined')
 	}
@@ -197,6 +209,8 @@ function library_Sort(){
 		var gg = [];
 		var main = [];
 		var ugl = [];
+		var chem = [];
+		var aces = [];
 
 		//Condition is useless because I change it to once user click
 		//library filter, automatically turn on the chance filter
@@ -243,6 +257,35 @@ function library_Sort(){
 			}else{
 				console.log("no Undergraduate Library found");
 			}
+
+			for(var j = 0; j < x.length; j++){
+				if(x[j].getElementsByClassName('libraryname')[0].innerText == "Chemistry Library"){
+					chem.push(x[j]);
+				}
+			}
+			if(chem.length != 0){
+				chem = bubble_sort_helper(chem);
+				for(var m = 0; m < chem.length; m++){
+					y.push(chem[m]);
+				}
+			}else{
+				console.log("no Chemistry Library found");
+			}
+
+			for(var j = 0; j < x.length; j++){
+				if(x[j].getElementsByClassName('libraryname')[0].innerText == "ACES Library"){
+					aces.push(x[j]);
+				}
+			}
+			if(aces.length != 0){
+				aces = bubble_sort_helper(aces);
+				for(var m = 0; m < aces.length; m++){
+					y.push(aces[m]);
+				}
+			}else{
+				console.log("no ACES Library found");
+			}
+
 
 		//Clear all Children
 		while(accordion.hasChildNodes()){
@@ -358,14 +401,16 @@ function bubble_Sort2(){
 }
 
 
+jQuery(document).ready(function($)
+{
 $('#update')
 	.popup({
 		popup 	: '#myboxes',
 		on		:	'click',
 		closable: false,
 		position:	'bottom right',
-	})
-;
+	});
+})
 
 
 

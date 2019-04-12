@@ -7,6 +7,7 @@ import googlemaps
 import requests
 from itertools import tee
 from django.db import connection
+import datetime
 
 # how to pass to page to page if user is logged in or not. This is really bad
 # for privacy as there is much more secure ways to do this. If there is time
@@ -28,6 +29,12 @@ def convertTime(string_time):
     min = int(min)
     finalTime = hour*100+min+add_on
     return finalTime
+
+# converts "mm/dd/yyyy" to day of week
+def getDay(forDate):
+    date_obj = pd.to_datetime(forDate, format="%m/%d/%Y")
+    day_int = date_obj.weekday() + 1
+    return day_int
 
 # Create your views here.
 def login_view(request, *args, **kwargs):
@@ -77,6 +84,11 @@ def search_view(request, *args, **kwargs):
                 logged_in = {"isLoggedIn":False, "username":""} # pass to html for navbar
                 return render(request, "login/login.html", {"logged_in":logged_in})
 
+        elif("UpdatedAddress" in request.POST): # coming from updated address
+            updatedAddress = request.POST["UpdatedAddress"]
+            student_username = logged_in["username"]
+            # TODO update student's address with student_username
+            return render(request, "search/search.html", {"logged_in":logged_in})
         else:    # coming from login
             print(request.POST)
 
@@ -138,17 +150,20 @@ def results_view(request, *args, **kwargs):
     location = request.GET["location"] # address as string address, not coordinates
     groupSize = request.GET["groupSize"] # will be a digit in string format
     forDate = request.GET["forDate"] # format is "mm/dd/yyyy"
+    dayOfWeek =  getDay(forDate)# turns date into day of week int 1 - 7 with 1 = "Monday"
     forTime = request.GET["forTime"] # format is "01:00 AM"
     forTimeInt = convertTime(forTime) # int version of requested time. so "05:30 PM" becomes 1730.
     environment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", or "Group Study"
 
     # TODO: Use search information to get reccomendations. Each reccomendation need to contain the following information:
-    # 1. library abbreviation (e.g. "UGL"). only "UGL", "GG", and "MainLib" are supported right now.
-    # 2. Floor (e.g. "4F" for fourth floor)
+    # 1. library abbreviation ("UGL","GG","MainLib", "Chem", "Aces")
+    # 2. Floor (e.g. "4" for fourth floor)
     # 3. Floor Section (Like left or right or however else we store it)
     # 4. How far the library is from the location the user entered (e.g. "20M" for 20 miles)
     # 5. Boolean if the section is quiet or not
     # 6. How confident we are. (e.g. "70" or "50", should be as a percentage)
+    # 7.  Rank of the result (1-5), as srting 
+    # 8. Library room reservation link
 
     # put the recommendations in the following dictionary allResults. When ready, remove the two
     # results in their with the number of results the algorithm returns.
