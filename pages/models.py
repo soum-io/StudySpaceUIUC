@@ -14,7 +14,7 @@ class Student(models.Model):
     isAdmin = models.BooleanField(default=False)
 
 class Request(models.Model):
-    requestID = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    requestID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
 class Library(models.Model):
     libName = models.CharField(max_length=255, primary_key=True)
@@ -43,7 +43,7 @@ class hoursOfOp(models.Model):
         unique_together = (('libName', 'dayOfWeek'),)
 
 class recordData(models.Model):
-    recordID = models.UUIDField(primary_key=True, default=uuid.uuid4(), editable=False)
+    recordID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     entryTime = models.DateTimeField(default=timezone.now, blank=False)
     libName = models.CharField(max_length=255)
     floorNum = models.IntegerField(default=0)

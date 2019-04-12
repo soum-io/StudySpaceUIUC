@@ -7,6 +7,7 @@ import googlemaps
 import requests
 from itertools import tee
 from django.db import connection
+from django.core.exceptions import ObjectDoesNotExist
 import datetime
 
 # how to pass to page to page if user is logged in or not. This is really bad
@@ -20,6 +21,8 @@ GOOGLE_MAPS_API_URL = 'http://maps.googleapis.com/maps/api/geocode/json'
 
 # convert string time to military time
 def convertTime(string_time):
+    if string_time == "":
+        return -1
     num, half = string_time.split(" ")
     add_on = 0
     if(half == "PM"):
@@ -66,7 +69,7 @@ def search_view(request, *args, **kwargs):
 
             # TODO: Check that the provided signup information sufficient. If so, add user to the database
             valid_signup = False
-            if password == passwordAgain:
+            if email != "" and location != "" and password == passwordAgain:
                 passHash = make_password(password)
                 #new_user = Student(username=email, passwordHash=passHash, mainAddress=location)
                 #new_user.save()
@@ -78,8 +81,9 @@ def search_view(request, *args, **kwargs):
                 valid_signup = True
 
             if(valid_signup): # user is created now redirect to search
+                default_address = location
                 logged_in = {"isLoggedIn":True, "username":email} # pass to html for navbar
-                return  render(request, "search/search.html", {"logged_in":logged_in})
+                return  render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
             else: # signup fields are not valid
                 logged_in = {"isLoggedIn":False, "username":""} # pass to html for navbar
                 return render(request, "login/login.html", {"logged_in":logged_in})
@@ -98,21 +102,33 @@ def search_view(request, *args, **kwargs):
 
             #TODO: check if username and password match database of user
             matches = False
-            temp_student = Student.objects.get(username=email)
-            print("student", temp_student)
-            if check_password(password, temp_student.passwordHash):
-                print("Success Match")
-                matches = True
+            default_address = ""
+            try:
+                temp_student = Student.objects.get(username=email)
+                print("student", temp_student)
+                if check_password(password, temp_student.passwordHash):
+                    print("Success Match")
+                    matches = True
+                    default_address = temp_student.mainAddress
+            except ObjectDoesNotExist:
+                matches = False
+                default_address = ""
 
             if(matches): # if user if valid
                 logged_in = {"isLoggedIn":True, "username":email} # pass to html for navbar
-                return  render(request, "search/search.html", {"logged_in":logged_in})
+                return  render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
             else: # user is not valid
                 logged_in = {"isLoggedIn":False, "username": ""} # pass to html for navbar
                 return render(request, "login/login.html", {"logged_in":logged_in})
 
     else: # get from anon or entering another search from results page user
         default_address = ""
+        try:
+            curr_user = Student.objects.get(username=logged_in["username"])
+            default_address = curr_user.mainAddress
+        except ObjectDoesNotExist:
+            default_address = ""
+
         #TODO if user is logged in - fill in their default address to defailt address var.
         return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
 
@@ -155,6 +171,11 @@ def results_view(request, *args, **kwargs):
     forTimeInt = convertTime(forTime) # int version of requested time. so "05:30 PM" becomes 1730.
     environment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", or "Group Study"
 
+    if location == "" or groupSize == "" or forDate == "" or forTime == "" or environment == "":
+        default_address = ""
+        if location != "":
+            default_address = location
+        return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
     # TODO: Use search information to get reccomendations. Each reccomendation need to contain the following information:
     # 1. library abbreviation ("UGL","GG","MainLib", "Chem", "Aces") -> "lib"
     # 2. Floor (e.g. "4" for fourth floor) -> "floor"
@@ -320,10 +341,14 @@ def update_view(request, *args, **kwargs):
 
     # TODO: check if user is a admin and has access
     global logged_in
-    is_admin = True
+    is_admin = False
     #get username for logged in individual
-    curr_user = Student.objects.get(username=logged_in["username"])
-    is_admin = curr_user.isAdmin
+    try:
+        curr_user = Student.objects.get(username=logged_in["username"])
+        is_admin = curr_user.isAdmin
+    except ObjectDoesNotExist:
+        is_admin = False
+
     if(is_admin):
         # TODO: fill library data with actual database info from the "Library" model. Take out dummy
         # data when you are done.
