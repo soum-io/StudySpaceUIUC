@@ -29,13 +29,18 @@
           <div class="eleven wide column">
             <div class="ui two column grid">
 
+                <button class="ui large teal submit button" id="Library_filter" value = "2" onclick="bubble_Sort2()">
+                  Filter By Rank
+                </button>
+
                 <button class="ui large teal submit button" id="Chance_filter" value = "2" onclick="bubble_Sort()">
-                  Filter By Chance
+                  Filter By Capacity
                 </button>
 
                 <button class="ui large teal submit button" id="Library_filter" value = "2" onclick="library_Sort()">
                   Filter By Library
                 </button>
+
 
                 <button class="ui large teal button" >
                     <a href="/search/" style="color: #ffffff;">
@@ -106,6 +111,11 @@
           <div class="ui raised card" id="Library_card">
             <div class="ui grid">
               <div class="four wide column">
+                <a class="ui left corner label" id="rank_icon">
+                    <i class="yellow star icon" id="star1"></i>
+                    <i class="yellow star icon" id="star2"></i>
+                    <i class="yellow star icon" id="star3"></i>
+                </a>
                 <div class="ui slide masked reveal image">
                   <img src="{% static 'img/LibraryImages/Grainger/Grainger1.jpeg' %}" id="Library_image1" class="visible content">
                   <img src="{% static 'img/LibraryImages/Grainger/Grainger2.jpeg' %}" id="Library_image2" class="hidden content">
@@ -155,8 +165,8 @@
             </div>
 
             <div class="extra">
-              <div class="ui two column grid">
-                <div class="left aligned column" id="Rating_column">
+              <div class="ui three column grid">
+                <div class=" column" id="Rating_column">
                   Predicted Capacity:
                   <span id="Chance" class='chance' data-value="10" class="oneline">
                     402
@@ -164,16 +174,22 @@
                   <span>
                     %
                   </span>
-
-                  <!--<div id="rating" class="ui star rating" data-rating="2"></div>-->
                 </div>
+
+                <div class=" column" id="Rating_column">
+                  Rank:
+                  <span id="Rank" class='rank' data-value="10" class="oneline">
+                    402
+                  </span>
+                 </div>
+
                 <div class="right aligned column">
-                    <a href="http://google.com" id="Reserve_button" class="ui basic button"
+                    <a href="http://google.com" onclick="return confirm('Sure you want to redirect to reservation page of corresponding Library?')" id="Reserve_button" class="ui basic button"
                       <i class="user outline icon "></i>
                        Reserve Room
                     </a>
                 </div>
-              </div>
+
             </div>
           </div>
         </div>
@@ -185,7 +201,7 @@
   {% for key, values in allResults.items %}
       <script type="text/javascript">
             var quietResult = {{ values.quiet|yesno:"true,false" }};
-            createElement("{{values.lib}}", "{{values.floor}}", "{{values.section}}", "{{values.dist}}", quietResult, "{{values.conf}}", "{{values.link}}");
+            createElement("{{values.lib}}", "{{values.floor}}", "{{values.section}}", "{{values.dist}}", quietResult, "{{values.conf}}", "1","{{values.link}}");
       </script>
   {% endfor %}
 

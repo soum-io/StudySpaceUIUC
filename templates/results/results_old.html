@@ -10,15 +10,38 @@
 </head>
 
 <body>
-  <img src="Bg.jpg" class="bg">
+  <!--<img src="Bg.jpg" class="bg">-->
+
 
   <div id="overlay">
+<!-- 410 --->
+    <div class="ui button" id="update">
+      Pop-Up Menu
+    </div>
+
+    <form class="ui large form" id="myboxes">
+      <div class="ui stacked secondary segment" >
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="home icon"></i>
+            <input type="text" placeholder="Address">
+          </div>
+        </div>
+
+        <div class="field">
+          <input class="ui fluid large teal submit button" type="submit" value="Update">
+        </div>
+      </div>
+    </form>
+
+
     <div class="ui grid" id="library_content">
       <!-- Title Row "Result" -->
       <div class="sixteen column row" id="title_row">
         <div class="column"></div>
 
         <div class="fourteen wide column" id="Result_column">
+
           <p1 ui class="header">
             <img align="left" class="ui tiny circular image" src="Icons/library.png">
               <h1 id = "Result_title">
@@ -38,7 +61,6 @@
         <div class="eleven wide column">
           <div class="ui two column grid">
 
-
             <button class="ui button" id="Chance_filter" value = "2" onclick="bubble_Sort()">
               By Chance
             </button>
@@ -47,15 +69,17 @@
               By Library
             </button>
 
+<!-- 410 -->
+            <button class="ui button" id="Library_filter" value = "2" onclick="bubble_Sort2()">
+              By Rank
+            </button>
+
             <div class="ui basic button" id="Refresh">
               <i class="search icon"></i>
                 <p1 id="Search_button">
                   Search again
                 </p1>
             </div>
-
-
-
 
           </div>
         </div>
@@ -123,7 +147,14 @@
           <div class="ui raised card" id="Library_card">
             <div class="ui grid">
               <div class="four wide column">
+                <!-- 410 -->
+                <a class="ui left corner label" id="rank_icon">
+                  <i class="yellow star icon" id="star1"></i>
+                  <i class="yellow star icon" id="star2"></i>
+                  <i class="yellow star icon" id="star3"></i>
+                </a>
                 <div class="ui slide masked reveal image">
+
                   <img src="LibraryImages/Grainger/Grainger1.jpeg" id="Library_image1" class="visible content">
                   <img src="LibraryImages/Grainger/Grainger2.jpeg" id="Library_image2" class="hidden content">
                   <!--<img src="LibraryImages/UGL/Ugl2.jpeg" id="Library_image" class="visible content">
@@ -174,7 +205,7 @@
             </div>
 
             <div class="extra">
-              <div class="ui two column grid">
+              <div class="ui three column grid">
                 <div class="left aligned column" id="Rating_column">
                   Chance:
                   <span id="Chance" class='chance' data-value="10" class="oneline">
@@ -186,8 +217,20 @@
 
                   <!--<div id="rating" class="ui star rating" data-rating="2"></div>-->
                 </div>
+
+                <!-- 410 --->
+                <div class="left aligned column" id="Rating_column">
+                  Rank:
+                  <span id="Rank" class='rank' data-value="10" class="oneline">
+                    402
+                  </span>
+
+
+                  <!--<div id="rating" class="ui star rating" data-rating="2"></div>-->
+                </div>
+
                 <div class="right aligned column">
-                  <a href="http://google.com" id="Reserve_button" class="ui basic button"
+                  <a href="http://google.com" onclick="return confirm('Sure you want to redirect to reservation page of corresponding Library?')" id="Reserve_button" class="ui basic button"
                     <i class="user outline icon "></i>
                      Reserve Room
                   </a>

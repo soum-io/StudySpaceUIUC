@@ -12,7 +12,7 @@ $(document).ready(function(){$(".rating").rating();});
 *	Input: string1, string2, string3, string4, boolean1, string5
 * Output: template card with provided parameters in scrollable list
 **************************************************/
-function createElement(lib,floor,section,distance,isquiet,chance,link){
+function createElement(lib,floor,section,distance,isquiet,chance,rank,link){
 	var registered = false
 	//get reference to the list
 	var S_list = document.getElementById("List_accordion")
@@ -60,12 +60,25 @@ function createElement(lib,floor,section,distance,isquiet,chance,link){
 		card_template.getElementById("Distance").innerText = distance;
 		card_template.getElementById("Chance").innerText = chance;
 		card_template.getElementById("Reserve_button").href = link;
+		card_template.getElementById("Rank").innerText = rank;
+
 		console.log(card_template.getElementById("Reserve_button".href));
+
 
 		if(isquiet == false)
 		{
 			card_template.getElementById("bellicon").className = "bell icon";
 			card_template.getElementById("bellicon").className = "bell slash icon";
+		}
+
+		if(rank == "1"){
+		}else if(rank == "2"){
+			card_template.getElementById("star3").style.display = 'none';
+		}else if(rank == "3"){
+			card_template.getElementById("star3").style.display = 'none';
+			card_template.getElementById("star2").style.display = 'none';
+		}else{
+			card_template.getElementById("rank_icon").style.display = 'none';
 		}
 
 		//Append the library card under the library list
@@ -293,6 +306,68 @@ function bubble_Sort(){
 		}
 
 }
+
+/************  Sorting: Bubble sort 2***************
+*	Input: None
+* Output: None
+**************************************************/
+function bubble_Sort2(){
+
+		//get reference to the list
+		var accordion = document.getElementById("List_accordion");
+		var children = accordion.childNodes;
+
+		var x = [];
+		for(var j = 0; j < children.length; j ++){
+			if(children[j].nodeName == "DIV"){
+				x.push(children[j]);
+			}
+		}
+
+		// Reset the visibility in case user uses navigation bar before
+		for(var y = 0; y < x.length; y ++){
+				x[y].style.display = "block";
+		}
+
+		//Bubble sort algorithm
+		var swapp;
+		var n = x.length - 1;
+		do{
+			swapp = false;
+			for(var i = 0; i < n; i ++){
+				if(parseInt(x[i].getElementsByClassName('rank')[0].innerText)
+				> parseInt(x[i+1].getElementsByClassName('rank')[0].innerText)){
+					var temp = x[i];
+					x[i] = x[i+1];
+					x[i+1] = temp;
+					swapp = true;
+				}
+			}
+			n--;
+		}while (swapp);
+
+		//Clear all Children
+		while(accordion.hasChildNodes()){
+			accordion.removeChild(accordion.lastChild);
+		}
+
+		//Append all sorted children
+		for(var n = 0; n < x.length; n++){
+			accordion.appendChild(x[n]);
+		}
+}
+
+
+$('#update')
+	.popup({
+		popup 	: '#myboxes',
+		on		:	'click',
+		closable: false,
+		position:	'bottom right',
+	})
+;
+
+
 
 // library data updates
 jQuery(document).ready(function($)

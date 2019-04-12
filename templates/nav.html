@@ -22,9 +22,25 @@
               </a>
               <div class="right menu">
                 {% if logged_in.isLoggedIn == True %}
-                    <a class="item">
+                    <a class="item" id="update">
                         Hello, {{logged_in.username}}.&nbsp;<i class="cog icon"></i>
                     </a>
+
+                    <form class="ui large form" id="myboxes">
+                      <div class="ui stacked secondary segment" >
+                        <div class="field">
+                          <div class="ui left icon input">
+                            <i class="home icon"></i>
+                            <input type="text" placeholder="Address">
+                          </div>
+                        </div>
+
+                        <div class="field">
+                          <input class="ui fluid large teal submit button" type="submit" value="Update">
+                        </div>
+                      </div>
+                    </form>
+
                     <a class="ui item" href="/">
                         Logout
                     </a>

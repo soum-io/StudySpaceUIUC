@@ -263,3 +263,12 @@ img.bg {
 {
     background-color: #12bc45;
 }
+
+#myboxes{
+    padding-left: 0px;
+	padding-top: 10px;
+	width: 30vw;
+	min-width: 295px;
+	position: inherit;
+	display: none;
+}
