@@ -63,9 +63,10 @@ def search_view(request, *args, **kwargs):
                 passHash = make_password(password)
                 #new_user = Student(username=email, passwordHash=passHash, mainAddress=location)
                 #new_user.save()
-                insert_query = 'INSERT INTO pages_student ("username", "passwordHash", "mainAddress", "prefStudyEnv", "favLibrary", "major") VALUES (%s, %s, %s, \'\', \'\', \'\');'
+
+                insert_query = 'INSERT INTO pages_student ("username", "passwordHash", "mainAddress", "prefStudyEnv", "favLibrary", "major", "isAdmin") VALUES (%s, %s, %s, \'\', \'\', \'\', %s);'
                 with connection.cursor() as cursor:
-                    cursor.execute(insert_query, (email, passHash, location))
+                    cursor.execute(insert_query, (email, passHash, location, "FALSE"))
                 print("Student Registered")
                 valid_signup = True
 
@@ -103,6 +104,33 @@ def search_view(request, *args, **kwargs):
         #TODO if user is logged in - fill in their default address to defailt address var.
         return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
 
+def get_google_maps_distances(origin):
+    library_df = pd.DataFrame(list(Library.objects.all().values('libName', 'libAddress', 'reservationLink')))
+    #comment these out once all libraries are supported
+
+    gmaps = googlemaps.Client(key=API_key)
+    destinations = list(library_df['libAddress'])
+    matrix = gmaps.distance_matrix(origin, destinations, mode="walking", units="imperial")
+    elems = matrix["rows"][0]["elements"]
+    distances = []
+    for dist in elems:
+        lib_distance = dist["distance"]['text']
+        distances.append(lib_distance)
+    library_df['Distance'] = distances
+    return library_df
+
+def get_section_df(environment):
+    section_df = pd.DataFrame()
+    if environment == "Group Study":
+        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="collaborative").values()))
+    elif environment == "Quiet Open Study":
+        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="quiet").values()))
+    elif environment == "Quiet Closed Study":
+        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="quiet").values()))
+    else:
+        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="EWS").values()))
+    return section_df
+
 def results_view(request, *args, **kwargs):
     global logged_in
     print(request.GET)
@@ -124,31 +152,8 @@ def results_view(request, *args, **kwargs):
 
     # put the recommendations in the following dictionary allResults. When ready, remove the two
     # results in their with the number of results the algorithm returns.
-
-    library_df = pd.DataFrame(list(Library.objects.all().values('libName', 'libAddress', 'reservationLink')))
-    #comment these out once all libraries are supported
-
-    gmaps = googlemaps.Client(key=API_key)
-    origins = []
-    origins.append(location)
-    destinations = list(library_df['libAddress'])
-    matrix = gmaps.distance_matrix(location, destinations, mode="walking", units="imperial")
-    elems = matrix["rows"][0]["elements"]
-    distances = []
-    for dist in elems:
-        lib_distance = dist["distance"]['text']
-        distances.append(lib_distance)
-    library_df['Distance'] = distances
-
-    section_df = pd.DataFrame()
-    if environment == "Group Study":
-        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="collaborative").values()))
-    elif environment == "Quiet Open Study":
-        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="quiet").values()))
-    elif environment == "Quiet Closed Study":
-        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="quiet").values()))
-    else:
-        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="EWS").values()))
+    library_df = get_google_maps_distances(location)
+    section_df = get_section_df(environment)
 
     allResults = {}
     res = "result"
@@ -301,6 +306,9 @@ def update_view(request, *args, **kwargs):
     # TODO: check if user is a admin and has access
     global logged_in
     is_admin = True
+    #get username for logged in individual
+    curr_user = Student.objects.get(username=logged_in["username"])
+    is_admin = curr_user.isAdmin
     if(is_admin):
         # TODO: fill library data with actual database info from the "Library" model. Take out dummy
         # data when you are done.
