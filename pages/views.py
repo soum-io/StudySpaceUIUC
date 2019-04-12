@@ -156,14 +156,14 @@ def results_view(request, *args, **kwargs):
     environment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", or "Group Study"
 
     # TODO: Use search information to get reccomendations. Each reccomendation need to contain the following information:
-    # 1. library abbreviation ("UGL","GG","MainLib", "Chem", "Aces")
-    # 2. Floor (e.g. "4" for fourth floor)
-    # 3. Floor Section (Like left or right or however else we store it)
-    # 4. How far the library is from the location the user entered (e.g. "20M" for 20 miles)
-    # 5. Boolean if the section is quiet or not
-    # 6. How confident we are. (e.g. "70" or "50", should be as a percentage)
-    # 7.  Rank of the result (1-5), as srting 
-    # 8. Library room reservation link
+    # 1. library abbreviation ("UGL","GG","MainLib", "Chem", "Aces") -> "lib"
+    # 2. Floor (e.g. "4" for fourth floor) -> "floor"
+    # 3. Floor Section (Like left or right or however else we store it) -> "section"
+    # 4. How far the library is from the location the user entered (e.g. "20M" for 20 miles) -> "dist"
+    # 5. Boolean if the section is quiet or not -> "quiet"
+    # 6. How confident we are. (e.g. "70" or "50", should be as a percentage) -> "conf"
+    # 7. Rank of the result (1-5), as srting -> "rank"
+    # 8. Library room reservation link -> "link"
 
     # put the recommendations in the following dictionary allResults. When ready, remove the two
     # results in their with the number of results the algorithm returns.
