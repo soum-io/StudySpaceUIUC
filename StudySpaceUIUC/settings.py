@@ -33,7 +33,7 @@ STATICFILES_DIRS = ([os.path.join(BASE_DIR, "staticfiles")])
 SECRET_KEY = '6%&dou#$yr^%+go*h6r7ek@&iv^q8ozk265waf@eyzi+&)zt8+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['0.0.0.0', 'localhost', 'still-peak-14797.herokuapp.com', '127.0.0.1']
 
