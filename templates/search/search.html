@@ -13,11 +13,7 @@
         <div class="field">
           <div class="ui left icon input">
             <i class="location arrow icon"></i>
-            {% if default_address == "" %}
-                <input type="text" id="location_autocomplete" name="location" placeholder="Current Location">
-            {% else %}
-                <input type="text" id="location_autocomplete" name="location" placeholder="Current Location" value = "{{default_address}}">
-            {% endif %}
+                <input type="text" class="location_autocomplete" name="location" value ="{{default_address}}" placeholder="Current Location">
           </div>
         </div>
         <div class="field">

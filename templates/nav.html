@@ -31,7 +31,7 @@
                         <div class="field">
                           <div class="ui left icon input">
                             <i class="home icon"></i>
-                            <input type="text" name="UpdatedAddress" placeholder="Update Your Default Address" id="location_autocomplete">
+                            <input type="text" name="UpdatedAddress" placeholder="Update Your Default Address" class="location_autocomplete">
                           </div>
                         </div>
 
@@ -63,8 +63,10 @@
 
     <script type="text/javascript">
         function activatePlacesSearch(){
-            var input = document.getElementById('location_autocomplete');
-            var autocomplete = new google.maps.places.Autocomplete(input);
+            var input = document.getElementsByClassName('location_autocomplete');
+            for (i = 0; i < input.length; i++) {
+                    var autocomplete = new google.maps.places.Autocomplete(input[i]);
+            }
         }
     </script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBzozWYI3q9hIHEOh1arRxsMLLzYx83MLQ&libraries=places&callback=activatePlacesSearch"></script>
