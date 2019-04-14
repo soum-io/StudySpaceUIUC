@@ -33,6 +33,8 @@ def convertTime(string_time):
     hour = int(hour)
     min = int(min)
     finalTime = hour*100+min+add_on
+    if(str(finalTime)[-2] == "3"):
+        finalTime = finalTime - 30 # no support for 30 minutes right now
     return finalTime
 
 # converts "mm/dd/yyyy" to day of week
@@ -176,6 +178,7 @@ def results_view(request, *args, **kwargs):
     dayOfWeek =  getDay(forDate)# turns date into day of week int 1 - 7 with 1 = "Monday"
     forTime = request.GET["forTime"] # format is "01:00 AM"
     forTimeInt = convertTime(forTime) # int version of requested time. so "05:30 PM" becomes 1730.
+    print("time: " + str(forTimeInt))
     environment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", or "Group Study"
 
     if location == "" or groupSize == "" or forDate == "" or forTime == "" or environment == "":
