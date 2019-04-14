@@ -4,7 +4,7 @@
 }
 
 .bg-image {
-    background: url("/static/img/grainger.jpg");
+    background: url("/static/img/grainger.jpg") fixed;
     /* Full height */
     background-size: cover;
     height: 100%;
@@ -12,24 +12,56 @@
     background-position: center;
     background-repeat: no-repeat;
     z-index: 1;
+    margin: 0px;
+    padding: 0px;
 }
 
 .ui.menu:first-child {
-    margin-bottom: 8%;
+    /* margin-bottom: 5%; */
 }
 
 /* Remove all margins to make window properly fit the contents */
-body {
+/* body {
 	height:	100%;
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size:cover;
-    overflow: hidden;
+    overflow: scroll;
+} */
+
+body {
+	overflow: hidden;
 }
 
-#library_content{
-	margin-top: 100px;
+img.bg {
+  /* Set rules to fill background */
+  min-height: 100%;
+  min-width: 1024px;
+
+  /* Set up proportionate scaling */
+  width: 100%;
+  height: auto;
+
+  /* Set up positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
 }
+
+@media screen and (max-width: 1024px) { /* Specific to this particular image */
+  img.bg {
+    left: 50%;
+    margin-left: -512px;   /* 50% */
+  }
+}
+
+#overlay{
+	margin: 0 auto;
+	max-width: 1600px;
+	max-height: 900px;
+    /* overflow-y: scroll; */
+}
+
 
 #Result_title{
 	margin-left: 10px;
@@ -42,57 +74,85 @@ body {
 	background: linear-gradient(to bottom right, white, transparent 50%);
 }
 
-#Filter_row{
-	margin-bottom: 13px;
-	height:10px;
-}
 
 #Filter_label{
-	margin-left: 20px;
+	margin-left: 8px;
+}
+
+#Filter_row{
+	min-width: 938px;
+	width: 80%;
 }
 
 #Content_row{
 	margin-top: 0px;
 }
 
-#ListOfSpace{
-	height:400px;
-	width: 920px;
-	overflow: auto;
+#card_col{
+	min-width: 700px;
 }
 
+#ListOfSpace{
+	width: 100%;
+	height:	60vh;
+	overflow: auto;
+}
 
 #List_accordion{
 	width: 100%;
 	background-color: #F8EEB4;
 }
 
-#List_accordion_Side{
-	width: 100%;
-	background-color: #FfE6EB;
+@media only screen and (max-width: 1016px) {
+    #Sidebar {
+        display: none;
+    }
+}
 
+@media only screen and (max-height: 550px) {
+    #title_row {
+        display: none;
+    }
+}
+
+@media only screen and (max-height: 350px) {
+    #Filter_row {
+        display: none;
+    }
+}
+
+
+#Sidebar{
+	min-width: 160px;
+	height: 50vh;
+	overflow: auto;
+}
+
+
+
+#bar_col{
+	width: 192px;
+	height: 390px;
+}
+
+#title_row{
+	min-width: 938px;
 }
 
 #Library_card{
 	width: 100%;
 	background-color: #F6E5E5;
-	height:180px;
+	min-height:180px;
 }
 
-#Library_image{
-	max-width: 80%;
-	margin-top: 10px;
-	margin-left: 10px;
-}
 
-#Sidebar{
-	height:390px;
+#List_accordion_Side{
 	width: 100%;
-	overflow: auto;
+	background-color: #FfE6EB;
 }
 
 #Sidebar_image{
-	max-width: 100%;
+	width: 100%
 }
 
 #Siderbar_text{
@@ -122,10 +182,6 @@ body {
 
 }
 
-#Library_info{
-	margin-top: 10px;
-}
-
 #Info_subtitles{
 	font-size:13pt;
 }
@@ -134,42 +190,86 @@ body {
 	font-weight: bold;
 }
 
-.library_toggle_wrapper
+.update_wrap
 {
-
+    background: #99ccff;
+    width: 80%; max-height: 60%;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10px;
+    margin-top: 0%;
+    padding: 10px;
+    overflow: auto;
 }
 
-#library_wrap
+.all_changes
 {
     margin-top: 0px;
-    margin-bottom: 30px;
-    background: gray;
-    width: auto; height: 50px;
+    /* display: flex; */
+    overflow: auto;
+    height: calc(100% - 44px); /*bc nav bar takes up top 44 pixels */
 }
 
-#library_wrap_toggle
+.update_section {
+    margin-bottom: 25px;
+    /* height: calc(100% - 100px); */
+    overflow: auto;
+}
+
+.update_wrap_toggle
 {
     display: block;
-    width: 100%;
+    width: 80%;
     height: 35px;
     line-height: 35px;
-    background: #9E9E77;
+    background: #003399;
     text-align: center;
     color: white;
     font-weight: bold;
     font-variant: small-caps;
-    box-shadow: 2px 2px 3px #888888;
     text-decoration:none;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 10px;
 }
 
-#library_wrap_toggle:hover
+.update_wrap_toggle:hover
 {
     text-decoration:none;
-    border-top: 1px groove white;
-    border-left: 1px groove white;
-    border-bottom: 1px solid #7B7B78;
-    border-right: 1px solid #7B7B78;
-    color: #663200;
-    background: #EBEBB3;
-    box-shadow: 1px 1px 2px #888888;
+    background: #3366cc;
+    color: white;
+}
+
+
+#form_button
+{
+    margin-left: 40px; margin-right: 20px;
+}
+
+.fixme
+{
+}
+
+.ui.grid {
+    margin: 0px;
+}
+
+.containerUpdate .contentUpdate {
+    display: none;
+    padding : 5px;
+}
+
+#addNewButton
+{
+    background-color: #12bc45;
+}
+
+#myboxes{
+    padding-left: 0px;
+	padding-top: 10px;
+	width: 30vw;
+	min-width: 295px;
+	position: absolute;
+	display: none;
+    z-index: 100;
 }
