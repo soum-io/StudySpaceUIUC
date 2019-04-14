@@ -63,7 +63,21 @@ def search_view(request, *args, **kwargs):
 
         # check if request is from a user signup or login
         signup_request = "location" in request.POST # this is only a field in the signup form
-        if(signup_request): # coming from signup
+
+        if("UpdatedAddress" in request.POST): # coming from updated address
+            updatedAddress = request.POST["UpdatedAddress"]
+            student_username = logged_in["username"]
+            print(student_username)
+            print(updatedAddress)
+            student_to_update = Student.objects.get(username=student_username)
+            student_to_update.mainAddress = updatedAddress
+            student_to_update.save()
+            default_address = updatedAddress
+            # TODO update student's address with student_username
+
+            return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
+
+        elif(signup_request): # coming from signup
 
             # get singup form data
             email = request.POST["email"]
@@ -89,19 +103,6 @@ def search_view(request, *args, **kwargs):
             else: # signup fields are not valid
                 logged_in = {"isLoggedIn":False, "username":""} # pass to html for navbar
                 return render(request, "login/login.html", {"logged_in":logged_in})
-
-        elif("UpdatedAddress" in request.POST): # coming from updated address
-            updatedAddress = request.POST["UpdatedAddress"]
-            student_username = logged_in["username"]
-            print(student_username)
-            print(updatedAddress)
-            student_to_update = Student.objects.get(username=student_username)
-            student_to_update.mainAddress = updatedAddress
-            student_to_update.save()
-            default_address = updatedAddress
-            # TODO update student's address with student_username
-
-            return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
         else:    # coming from login
             print(request.POST)
 
@@ -170,6 +171,23 @@ def get_section_df(environment):
 
 def results_view(request, *args, **kwargs):
     global logged_in
+
+    if(request.method == "POST"): # post are from login
+        # check if request is from a user signup or login
+        if("UpdatedAddress" in request.POST): # coming from updated address
+            updatedAddress = request.POST["UpdatedAddress"]
+            student_username = logged_in["username"]
+            print(student_username)
+            print(updatedAddress)
+            student_to_update = Student.objects.get(username=student_username)
+            student_to_update.mainAddress = updatedAddress
+            student_to_update.save()
+            default_address = updatedAddress
+            # TODO update student's address with student_username
+            return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
+
+
+
     print(request.GET)
     # get search form data
     location = request.GET["location"] # address as string address, not coordinates
@@ -237,7 +255,19 @@ def results_view(request, *args, **kwargs):
     return render(request, "results/results.html", pass_data)
 
 def update_view(request, *args, **kwargs):
+    global logged_in
     if(request.method == "POST"):
+        if("UpdatedAddress" in request.POST): # coming from updated address
+            updatedAddress = request.POST["UpdatedAddress"]
+            student_username = logged_in["username"]
+            print(student_username)
+            print(updatedAddress)
+            student_to_update = Student.objects.get(username=student_username)
+            student_to_update.mainAddress = updatedAddress
+            student_to_update.save()
+            default_address = updatedAddress
+            # TODO update student's address with student_username
+            return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
         if("Library" in request.POST):
             if(request.POST["Library"] == "update"):
                 libName =  request.POST["libName"]
@@ -350,7 +380,6 @@ def update_view(request, *args, **kwargs):
 
 
     # TODO: check if user is a admin and has access
-    global logged_in
     is_admin = False
     #get username for logged in individual
     try:
