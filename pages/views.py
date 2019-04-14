@@ -5,6 +5,8 @@ from .models import Student, Library, Request, FloorSection
 import pandas as pd
 import googlemaps
 import requests
+import operator
+import numpy as np
 from itertools import tee
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
@@ -69,10 +71,8 @@ def search_view(request, *args, **kwargs):
 
             # TODO: Check that the provided signup information sufficient. If so, add user to the database
             valid_signup = False
-            if email != "" and location != "" and password == passwordAgain:
+            if email != "" and location != "" and password != "" and password == passwordAgain:
                 passHash = make_password(password)
-                #new_user = Student(username=email, passwordHash=passHash, mainAddress=location)
-                #new_user.save()
 
                 insert_query = 'INSERT INTO pages_student ("username", "passwordHash", "mainAddress", "prefStudyEnv", "favLibrary", "major", "isAdmin") VALUES (%s, %s, %s, \'\', \'\', \'\', %s);'
                 with connection.cursor() as cursor:
@@ -91,8 +91,15 @@ def search_view(request, *args, **kwargs):
         elif("UpdatedAddress" in request.POST): # coming from updated address
             updatedAddress = request.POST["UpdatedAddress"]
             student_username = logged_in["username"]
+            print(student_username)
+            print(updatedAddress)
+            student_to_update = Student.objects.get(username=student_username)
+            student_to_update.mainAddress = updatedAddress
+            student_to_update.save()
+            default_address = updatedAddress
             # TODO update student's address with student_username
-            return render(request, "search/search.html", {"logged_in":logged_in})
+
+            return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
         else:    # coming from login
             print(request.POST)
 
