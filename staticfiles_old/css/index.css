@@ -1,0 +1,175 @@
+
+.smudge {
+  max-width: 600px;
+}
+
+.bg-image {
+    background: url("/static/img/grainger.jpg");
+    /* Full height */
+    background-size: cover;
+    height: 100%;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+
+.ui.menu:first-child {
+    margin-bottom: 8%;
+}
+
+/* Remove all margins to make window properly fit the contents */
+body {
+	height:	100%;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size:cover;
+    overflow: hidden;
+}
+
+#library_content{
+	margin-top: 100px;
+}
+
+#Result_title{
+	margin-left: 10px;
+	font-size: 24pt;
+	font-family: "Times New Roman", Times, serif;
+}
+
+#Result_column{
+	background-color: #5893D4;
+	background: linear-gradient(to bottom right, white, transparent 50%);
+}
+
+#Filter_row{
+	margin-bottom: 13px;
+	height:10px;
+}
+
+#Filter_label{
+	margin-left: 20px;
+}
+
+#Content_row{
+	margin-top: 0px;
+}
+
+#ListOfSpace{
+	height:400px;
+	width: 920px;
+	overflow: auto;
+}
+
+
+#List_accordion{
+	width: 100%;
+	background-color: #F8EEB4;
+}
+
+#List_accordion_Side{
+	width: 100%;
+	background-color: #FfE6EB;
+
+}
+
+#Library_card{
+	width: 100%;
+	background-color: #F6E5E5;
+	height:180px;
+}
+
+#Library_image{
+	max-width: 80%;
+	margin-top: 10px;
+	margin-left: 10px;
+}
+
+#Sidebar{
+	height:390px;
+	width: 100%;
+	overflow: auto;
+}
+
+#Sidebar_image{
+	max-width: 100%;
+}
+
+#Siderbar_text{
+	font-size: 9pt;
+}
+
+#Siderbar_card{
+	width: 100%;
+}
+
+#LibraryNameText{
+	margin-top: 20px;
+	font-size: 18pt;
+}
+
+#Reserve_button{
+	width: 50%;
+}
+
+#Rating_column{
+	margin-top: 10px;
+}
+
+#NumOfResults{
+	font-size: 13pt;
+	font-family: "Times New Roman", Times, serif;
+
+}
+
+#Library_info{
+	margin-top: 10px;
+}
+
+#Info_subtitles{
+	font-size:13pt;
+}
+
+#Search_button{
+	font-weight: bold;
+}
+
+.library_toggle_wrapper
+{
+
+}
+
+#library_wrap
+{
+    margin-top: 0px;
+    margin-bottom: 30px;
+    background: gray;
+    width: auto; height: 50px;
+}
+
+#library_wrap_toggle
+{
+    display: block;
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    background: #9E9E77;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    font-variant: small-caps;
+    box-shadow: 2px 2px 3px #888888;
+    text-decoration:none;
+}
+
+#library_wrap_toggle:hover
+{
+    text-decoration:none;
+    border-top: 1px groove white;
+    border-left: 1px groove white;
+    border-bottom: 1px solid #7B7B78;
+    border-right: 1px solid #7B7B78;
+    color: #663200;
+    background: #EBEBB3;
+    box-shadow: 1px 1px 2px #888888;
+}
