@@ -95,12 +95,15 @@ def search_view(request, *args, **kwargs):
         elif("UpdatedAddress" in request.POST): # coming from updated address
             updatedAddress = request.POST["UpdatedAddress"]
             student_username = logged_in["username"]
-            print(student_username)
-            print(updatedAddress)
-            student_to_update = Student.objects.get(username=student_username)
-            student_to_update.mainAddress = updatedAddress
-            student_to_update.save()
-            default_address = updatedAddress
+            #print(student_username)
+            #print(updatedAddress)
+            try:
+                student_to_update = Student.objects.get(username=student_username)
+                student_to_update.mainAddress = updatedAddress
+                student_to_update.save()
+                default_address = updatedAddress
+            except ObjectDoesNotExist:
+                default_address = ""
             # TODO update student's address with student_username
 
             return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
