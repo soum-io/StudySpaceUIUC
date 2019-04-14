@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth.hashers import make_password, check_password
-from .models import Student, Library, Request, FloorSection
+from .models import Student, Library, Request, FloorSection, hoursOfOp, recordData
 import pandas as pd
 import googlemaps
 import requests
@@ -11,6 +11,8 @@ from itertools import tee
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
 import datetime
+from django.db.models import Avg
+
 
 # how to pass to page to page if user is logged in or not. This is really bad
 # for privacy as there is much more secure ways to do this. If there is time
@@ -150,23 +152,44 @@ def get_google_maps_distances(origin):
     matrix = gmaps.distance_matrix(origin, destinations, mode="walking", units="imperial")
     elems = matrix["rows"][0]["elements"]
     distances = []
+    distance_words = []
     for dist in elems:
-        lib_distance = dist["distance"]['text']
+        lib_distance = dist["distance"]['value']
+        lib_distance_words = dist["distance"]["text"]
         distances.append(lib_distance)
+        distance_words.append(lib_distance_words)
     library_df['Distance'] = distances
+    library_df['Distance Words'] = distance_words
+
+    #get distance rankings... add to library_df['distrank']
+    dist_rankings = {}
+    rankings = [0,0,0,0,0]
+    iter = 0
+    for i in range(len(rankings)):
+        best_index = distances.index(min(distances))
+        rankings[best_index] = i+1
+        distances[best_index] = 0
+    library_df['distrank'] = rankings
+
     return library_df
 
-def get_section_df(environment):
-    section_df = pd.DataFrame()
-    if environment == "Group Study":
-        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="collaborative").values()))
-    elif environment == "Quiet Open Study":
-        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="quiet").values()))
-    elif environment == "Quiet Closed Study":
-        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="quiet").values()))
+def get_open_sections_func(dayOfWeek, forTimeInt, environment):
+    #get_open_sections = 'SELECT * FROM pages_FloorSection'
+    #get_open_sections = 'SELECT * FROM pages_FloorSection as FS, pages_hoursOfOp as hours WHERE "hours.libName" = "FS.libname" and "pages_hoursOfOp.dayOfWeek" = %s and "pages_hoursOfOp.openTime" <= %s and "pages_hoursOfOp.closeTime" >= %s and "pages_FloorSection.studyEnv" = %s'
+    get_open_sections = 'SELECT * FROM pages_FloorSection as FS, pages_hoursOfOp as hours WHERE hours."dayOfWeek" = %s and hours."libName" = FS."libName" and hours."openTime" <= %s and hours."closeTime" >= %s and FS."studyEnv" = %s'
+#    open_sections = FloorSection.objects.raw(get_open_sections, (str(dayOfWeek), str(forTimeInt), str(forTimeInt), environment))
+    if (environment == "Group Study"):
+        environment = "collaborative"
+    elif(environment == "Quiet Closed Study" or environment == "Quiet Open Study"):
+        environment = "quiet"
     else:
-        section_df = pd.DataFrame(list(FloorSection.objects.filter(studyEnv="EWS").values()))
-    return section_df
+        environment = "EWS"
+    with connection.cursor() as cursor:
+        cursor.execute(get_open_sections, (str(dayOfWeek), str(forTimeInt), str(forTimeInt), environment))
+        open_sections = cursor.fetchall()
+    return open_sections
+
+
 
 def results_view(request, *args, **kwargs):
     global logged_in
@@ -175,7 +198,7 @@ def results_view(request, *args, **kwargs):
     location = request.GET["location"] # address as string address, not coordinates
     groupSize = request.GET["groupSize"] # will be a digit in string format
     forDate = request.GET["forDate"] # format is "mm/dd/yyyy"
-    dayOfWeek =  getDay(forDate)# turns date into day of week int 1 - 7 with 1 = "Monday"
+    dayOfWeek = getDay(forDate)# turns date into day of week int 1 - 7 with 1 = "Monday"
     forTime = request.GET["forTime"] # format is "01:00 AM"
     forTimeInt = convertTime(forTime) # int version of requested time. so "05:30 PM" becomes 1730.
     print("time: " + str(forTimeInt))
@@ -186,6 +209,44 @@ def results_view(request, *args, **kwargs):
         if location != "":
             default_address = location
         return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
+
+    library_df = get_google_maps_distances(location)
+    open_sections = get_open_sections_func(dayOfWeek, forTimeInt, environment)
+
+
+
+
+
+    confidences = {}
+    #get percent fulls for each floor_section -> then calc confidence
+    for floor_section in open_sections:
+        max_cap = floor_section[4]
+        libName = floor_section[1]
+        floorNum = floor_section[2]
+        section = floor_section[3]
+
+        get_current_students = list(recordData.objects.filter().aggregate(avg_count = Avg('count')).values())
+        #get_current_students = "SELECT AVG(count) as avg, 'pages_recordData.recordID' FROM pages_recordData WHERE 'libName' = %s, 'floorNum' = %s, 'section' = %s, 'dayOfWeek' = %s,'time' = %s GROUP BY libName, floorNum, section, dayOfWeek, time;"
+        #students_predicted = recordData.objects.raw(get_current_students, (libName, str(floorNum), section, day, str(forTimeInt)))
+
+        percent_full = get_current_students[0]/max_cap
+        #get to end confidence from percent full and distrank
+        dist_weight = 0.50
+        capacity_weight = 1-dist_weight
+        #25% distance = distweight
+        # if closest library, all floorsections get distweight from distance
+        # second closest gets 0.8*distweight
+        # third = 0.6*distweight
+        # fourth = 0.4*distweight
+        # fifth = 0.2*distweight
+        # effectively = (6-distrank)*distweight
+        distrank = library_df.loc[library_df['libName'] == libName, 'distrank'].iloc[0]
+        #75% percent_full = full_weight
+        #each floor section gets %full*full_weight
+        confidence = dist_weight*(6-distrank)/5 + capacity_weight*(1-percent_full)
+        confidences[floor_section] = confidence
+
+    sorted_confidences = sorted(confidences.items(), key=operator.itemgetter(1), reverse = True)
     # TODO: Use search information to get reccomendations. Each reccomendation need to contain the following information:
     # 1. library abbreviation ("UGL","GG","MainLib", "Chem", "Aces") -> "lib"
     # 2. Floor (e.g. "4" for fourth floor) -> "floor"
@@ -198,33 +259,33 @@ def results_view(request, *args, **kwargs):
 
     # put the recommendations in the following dictionary allResults. When ready, remove the two
     # results in their with the number of results the algorithm returns.
-    library_df = get_google_maps_distances(location)
-    section_df = get_section_df(environment)
-
     allResults = {}
     res = "result"
     count = 1
-    for index, section in section_df.iterrows():
+    for section, confidence in sorted_confidences:
         result = {}
-        if section['libName'] == "Grainger":
+        if section[1] == "Grainger":
             result["lib"] = "GG"
-            result["conf"] = "75"
-        elif section['libName'] == "UGL":
+        elif section[1] == "UGL":
             result["lib"] = "UGL"
-            result["conf"] = "50"
-        elif section['libName'] == "Main Library":
+        elif section[1] == "Main Library":
             result["lib"] = "MainLib"
-            result["conf"] = "25"
-        result["floor"] = section['floorNum']
-        result["section"] = section['section']
-        result["dist"] = library_df[library_df['libName'] == section['libName']].iloc[0]['Distance']
+        elif section[1] == "Chemistry Library":
+            result["lib"] = "Chem"
+        elif section[1] == "ACES":
+            result["lib"] = "Aces"
+
+        result["conf"] = confidence
+        result["floor"] = section[2]
+        result["section"] = section[3]
+        result["dist"] = library_df[library_df['libName'] == section[1]].iloc[0]['Distance Words']
         # TODO make sure this is the correct rank based on what ever alg'm we use
-        result["rank"] = count
+        result["rank"] = str(count)
         if environment == "Quiet Open Study" or environment == "Quiet Closed Study":
             result["quiet"] = True
         else:
             result["quiet"] = False
-        result["link"] = library_df[library_df['libName'] == section['libName']].iloc[0]['reservationLink']
+        result["link"] = library_df[library_df['libName'] == section[1]].iloc[0]['reservationLink']
         allResults[res + str(count)] = result
         count+=1
 
@@ -381,219 +442,16 @@ def update_view(request, *args, **kwargs):
         print(floor_data)
 
         # TODO Fill Hours of Operation data from database. The names should be libname#. Has to do with sorting.
-        #0 = Sunday, 6 = Saturday
-        hoursOfOp = {
-            "Grainger6": {
-                "libName" : "Grainger",
-                "dayOfWeek" : 6,
-                "openTime": 0,
-                "closeTime": 2400
-            },
-            "Grainger5": {
-                "libName" : "Grainger",
-                "dayOfWeek" : 5,
-                "openTime": 0,
-                "closeTime": 2400
-            },
-            "Grainger4": {
-                "libName" : "Grainger",
-                "dayOfWeek" : 4,
-                "openTime": 0,
-                "closeTime": 2400
-            },
-            "Grainger3": {
-                "libName" : "Grainger",
-                "dayOfWeek" : 3,
-                "openTime": 0,
-                "closeTime": 2400
-            },
-            "Grainger2": {
-                "libName" : "Grainger",
-                "dayOfWeek" : 2,
-                "openTime": 0,
-                "closeTime": 2400
-            },
-            "Grainger1": {
-                "libName" : "Grainger",
-                "dayOfWeek" : 1,
-                "openTime": 0,
-                "closeTime": 2400
-            },
-            "Grainger0": {
-                "libName" : "Grainger",
-                "dayOfWeek" : 0,
-                "openTime": 0,
-                "closeTime": 2400
-            },
-            "Chem6": {
-                "libName" : "Chemistry Library",
-                "dayOfWeek" : 6,
-                "openTime": 1300,
-                "closeTime": 1700
-            },
-            "Chem5": {
-                "libName" : "Chemistry Library",
-                "dayOfWeek" : 5,
-                "openTime": 900,
-                "closeTime": 1700
-            },
-            "Chem4": {
-                "libName" : "Chemistry Library",
-                "dayOfWeek" : 4,
-                "openTime": 900,
-                "closeTime": 2200
-            },
-            "Chem3": {
-                "libName" : "Chemistry Library",
-                "dayOfWeek" : 3,
-                "openTime": 900,
-                "closeTime": 2200
-            },
-            "Chem2": {
-                "libName" : "Chemistry Library",
-                "dayOfWeek" : 2,
-                "openTime": 900,
-                "closeTime": 1700
-            },
-            "Chem1": {
-                "libName" : "Chemistry Library",
-                "dayOfWeek" : 1,
-                "openTime": 900,
-                "closeTime": 1700
-            },
-            "Chem0": {
-                "libName" : "Chemistry Library",
-                "dayOfWeek" : 0,
-                "openTime": 1300,
-                "closeTime": 2200
-            },
-            "Main6": {
-                "libName" : "Main Library",
-                "dayOfWeek" : 6,
-                "openTime": 0,
-                "closeTime": 0
-            },
-            "Main5": {
-                "libName" : "Main Library",
-                "dayOfWeek" : 5,
-                "openTime": 850,
-                "closeTime": 1800
-            },
-            "Main4": {
-                "libName" : "Main Library",
-                "dayOfWeek" : 4,
-                "openTime": 850,
-                "closeTime": 2200
-            },
-            "Main3": {
-                "libName" : "Main Library",
-                "dayOfWeek" : 3,
-                "openTime": 850,
-                "closeTime": 2200
-            },
-            "Main2": {
-                "libName" : "Main Library",
-                "dayOfWeek" : 2,
-                "openTime": 850,
-                "closeTime": 1700
-            },
-            "Main1": {
-                "libName" : "Main Library",
-                "dayOfWeek" : 1,
-                "openTime": 850,
-                "closeTime": 1700
-            },
-            "Main0": {
-                "libName" : "Main Library",
-                "dayOfWeek" : 0,
-                "openTime": 0,
-                "closeTime": 0
-            },
-            "UGL6": {
-                "libName" : "UGL",
-                "dayOfWeek" : 6,
-                "openTime": 0,
-                "closeTime": 0
-            },
-            "UGL5": {
-                "libName" : "UGL",
-                "dayOfWeek" : 5,
-                "openTime": 750,
-                "closeTime": 1900
-            },
-            "UGL4": {
-                "libName" : "UGL",
-                "dayOfWeek" : 4,
-                "openTime": 750,
-                "closeTime": 1450
-            },
-            "UGL3": {
-                "libName" : "UGL",
-                "dayOfWeek" : 3,
-                "openTime": 750,
-                "closeTime": 1450
-            },
-            "UGL2": {
-                "libName" : "UGL",
-                "dayOfWeek" : 2,
-                "openTime": 850,
-                "closeTime": 1700
-            },
-            "UGL1": {
-                "libName" : "UGL",
-                "dayOfWeek" : 1,
-                "openTime": 850,
-                "closeTime": 1700
-            },
-            "UGL0": {
-                "libName" : "UGL",
-                "dayOfWeek" : 0,
-                "openTime": 0,
-                "closeTime": 0
-            },
-            "ACES6": {
-                "libName" : "ACES Library",
-                "dayOfWeek" : 6,
-                "openTime": 0,
-                "closeTime": 0
-            },
-            "ACES5": {
-                "libName" : "ACES Library",
-                "dayOfWeek" : 5,
-                "openTime": 850,
-                "closeTime": 1900
-            },
-            "ACES4": {
-                "libName" : "ACES Library",
-                "dayOfWeek" : 4,
-                "openTime": 850,
-                "closeTime": 1450
-            },
-            "ACES3": {
-                "libName" : "ACES Library",
-                "dayOfWeek" : 3,
-                "openTime": 850,
-                "closeTime": 1450
-            },
-            "ACES2": {
-                "libName" : "ACES Library",
-                "dayOfWeek" : 2,
-                "openTime": 850,
-                "closeTime": 1700
-            },
-            "ACES1": {
-                "libName" : "ACES Library",
-                "dayOfWeek" : 1,
-                "openTime": 850,
-                "closeTime": 1700
-            },
-            "ACES0": {
-                "libName" : "ACES Library",
-                "dayOfWeek" : 0,
-                "openTime": 0,
-                "closeTime": 0
-            }
-        }
+        #1 = Sunday, 7 = Saturday
+        hours_data = {}
+        hoursOfOp_vals = hoursOfOp.objects.values()
+        for hour in hoursOfOp_vals:
+            key = hour['libName'] + str(hour['dayOfWeek'])
+            hours_data[key] = hour
+        print(hours_data)
+
+
+
 
         # TODO Fill record data from database. The names should be libname#. Has to do with sorting.
         record_data = {
@@ -621,7 +479,7 @@ def update_view(request, *args, **kwargs):
             "logged_in": logged_in,
             "library_data" : library_data,
             "floor_data": floor_data,
-            "hoursOfOp": hoursOfOp,
+            "hoursOfOp": hours_data,
             "record_data" : record_data
         }
         return render(request, "update/update.html", pass_data)
