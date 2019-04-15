@@ -219,7 +219,7 @@
   {% for key, values in allResults.items %}
       <script type="text/javascript">
             var quietResult = {{ values.quiet|yesno:"true,false" }};
-            createElement("{{values.lib}}", "{{values.floor}}", "{{values.section}}", "{{values.dist}}", quietResult, "{{values.conf}}", "1","{{values.link}}");
+            createElement("{{values.lib}}", "{{values.floor}}", "{{values.section}}", "{{values.dist}}", quietResult, "{{values.conf}}", "{{values.rank}}","{{values.link}}");
       </script>
   {% endfor %}
 
