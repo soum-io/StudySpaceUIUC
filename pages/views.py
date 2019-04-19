@@ -411,7 +411,7 @@ def update_view(request, *args, **kwargs):
                 libName =  request.POST["libName"]
                 floorNum = request.POST["floorNum"]
                 section = request.POST["section"]
-                delete_query = 'DELETE FROM pages_FloorSection WHERE "libname" = %s and "floorNum" = %s and "section" = %s;'
+                delete_query = 'DELETE FROM pages_FloorSection WHERE "libName" = %s and "floorNum" = %s and "section" = %s;'
                 with connection.cursor() as cursor:
                     cursor.execute(delete_query, (libName, floorNum, section))
                 # TODO: Delete FloorSection with primary key {libName, floornum, and section}
