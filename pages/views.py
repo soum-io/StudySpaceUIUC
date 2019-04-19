@@ -72,6 +72,9 @@ def search_view(request, *args, **kwargs):
             student_username = logged_in["username"]
             print(student_username)
             print(updatedAddress)
+            #update_query = 'UPDATE pages_Student SET "mainAddress" = %s WHERE "username" = %s;'
+            #with connection.cursor() as cursor:
+            #    cursor.execute(update_query, (updatedAddress, student_username))
             student_to_update = Student.objects.get(username=student_username)
             student_to_update.mainAddress = updatedAddress
             student_to_update.save()
@@ -117,6 +120,7 @@ def search_view(request, *args, **kwargs):
             matches = False
             default_address = ""
             try:
+                #temp_student = Student.objects.raw('SELECT * FROM pages_Student WHERE "username" = %s', email)
                 temp_student = Student.objects.get(username=email)
                 print("student", temp_student)
                 if check_password(password, temp_student.passwordHash):
@@ -137,8 +141,10 @@ def search_view(request, *args, **kwargs):
     else: # get from anon or entering another search from results page user
         default_address = ""
         try:
+            #curr_user = Student.objects.raw('SELECT * FROM pages_Student WHERE "username" = %s', logged_in["username"])
             curr_user = Student.objects.get(username=logged_in["username"])
             default_address = curr_user.mainAddress
+            curr_user.save()
         except ObjectDoesNotExist:
             default_address = ""
 
@@ -256,8 +262,10 @@ def results_view(request, *args, **kwargs):
 
         if len(students_predicted_raw) != 0:
             avg_count /= len(students_predicted_raw)
+        print(avg_count)
+        print(max_cap)
         percent_full = avg_count/max_cap
-        #print(str(percent_full))
+        print(str(percent_full))
         #get to end confidence from percent full and distrank
         dist_weight = 0.25
         capacity_weight = 1 - dist_weight
@@ -271,10 +279,11 @@ def results_view(request, *args, **kwargs):
         #lib_row = library_df[library_df["libName"] == libName]
         #calculate %further away this library is from closest one
         d = library_df.loc[library_df['libName'] == libName, 'Distance'].iloc[0]
-        #print(libName, str(d))
+        print(libName, str(d))
+        print("min distance", min_distance)
 
-        percent_distance = 1 - (d - min_distance)/min_distance
-        #print(libName, percent_distance)
+        percent_distance = 1 - (d - min_distance)/d
+        print(libName, percent_distance)
 
         #distrank = library_df.loc[library_df['libName'] == libName, 'distrank'].iloc[0]
         #print(distrank)
@@ -282,7 +291,7 @@ def results_view(request, *args, **kwargs):
         #each floor section gets %full*full_weight
         #confidence = dist_weight*(6-distrank)/5 + capacity_weight*(1-percent_full)
         confidence = percent_distance*dist_weight + capacity_weight*(1 - percent_full)
-        #print(confidence)
+        print(confidence)
         confidences[floor_section] = confidence
         spot_confidences[floor_section] = 1 - percent_full
 
