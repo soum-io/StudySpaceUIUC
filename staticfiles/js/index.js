@@ -54,12 +54,14 @@ function createElement(lib,floor,section,distance,isquiet,chance,rank,link){
 	    card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/Chem/Chem2.jpg";
 	    card_template.getElementById("reference_item").id = 'Chem';
 	    card_template.getElementById("LibraryNameText").innerText = "Chemistry Library";
+		registered = true
 	}else if (lib == "Aces"){
 		console.log('Aces')
 	    card_template.getElementById("Library_image1").src = src="/static/img/LibraryImages/Aces/Aces1.jpg";
 	    card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/Aces/Aces1.jpg";
 	    card_template.getElementById("reference_item").id = 'Aces';
 	    card_template.getElementById("LibraryNameText").innerText = "ACES Library";
+		registered = true
 	}else{
 	    console.log('Library not defined')
 	}
