@@ -432,14 +432,14 @@ def update_view(request, *args, **kwargs):
                 dayOfWeek = request.POST["dayOfWeek"]
                 openTime = request.POST["openTime"]
                 closeTime = request.POST["closeTime"]
-                update_query = 'UPDATE pages_hours SET "openTime" = %s, "closeTime" = %s WHERE "libName" = %s and "dayOfWeek" = %s;'
+                update_query = 'UPDATE pages_hoursofop SET "openTime" = %s, "closeTime" = %s WHERE "libName" = %s and "dayOfWeek" = %s;'
                 with connection.cursor() as cursor:
                     cursor.execute(update_query, (openTime, closeTime, libName, dayOfWeek))
                 # TODO: update record hours of operation with primary key {libName, dayOfWeek} with the above info
             elif(request.POST["Hours"] == "delete"):
                 libName =  request.POST["libName"]
                 dayOfWeek = request.POST["dayOfWeek"]
-                delete_query = 'DELETE FROM pages_hours WHERE "libname" = %s and "dayOfWeek" = %s;'
+                delete_query = 'DELETE FROM pages_hoursofop WHERE "libName" = %s and "dayOfWeek" = %s;'
                 with connection.cursor() as cursor:
                     cursor.execute(delete_query, (libName, dayOfWeek))
                 # TODO: Delete hours of operation with primary key {libName, dayOfWeek}
@@ -448,7 +448,7 @@ def update_view(request, *args, **kwargs):
                 dayOfWeek = request.POST["dayOfWeek"]
                 openTime = request.POST["openTime"]
                 closeTime = request.POST["closeTime"]
-                insert_query = 'INSERT INTO pages_hours ("libName", "dayOfWeek", "openTime", "closeTime") VALUES (%s, %s, %s, %s);'
+                insert_query = 'INSERT INTO pages_hoursofop ("libName", "dayOfWeek", "openTime", "closeTime") VALUES (%s, %s, %s, %s);'
                 with connection.cursor() as cursor:
                     cursor.execute(insert_query, (libName, dayOfWeek, openTime, closeTime))
                 # TODO: Check that entries are valid and add new hours of operation to the database
