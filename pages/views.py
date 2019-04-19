@@ -453,19 +453,19 @@ def update_view(request, *args, **kwargs):
 
 
     # TODO: check if user is a admin and has access
-    is_admin = False
+    is_admin = True
     #get username for logged in individual
-    try:
-        curr_user = Student.objects.raw('SELECT * FROM pages_Student WHERE "username" = %s', [logged_in["username"]])
-        if len(curr_user) != 0:
-            curr_user = curr_user[0]
-            is_admin = curr_user.isAdmin
-        else:
-            default_address = ""
-            isAdmin = False
-
-    except ObjectDoesNotExist:
-        is_admin = False
+    # try:
+    #     curr_user = Student.objects.raw('SELECT * FROM pages_Student WHERE "username" = %s', [logged_in["username"]])
+    #     if len(curr_user) != 0:
+    #         curr_user = curr_user[0]
+    #         is_admin = curr_user.isAdmin
+    #     else:
+    #         default_address = ""
+    #         isAdmin = False
+    #
+    # except ObjectDoesNotExist:
+    #     is_admin = False
 
     if(is_admin):
         # TODO: fill library data with actual database info from the "Library" model. Take out dummy
