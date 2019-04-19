@@ -42,6 +42,8 @@ def convertTime(string_time):
 
 # converts "mm/dd/yyyy" to day of week
 def getDay(forDate):
+    if(forDate == ""):
+        return -1
     date_obj = pd.to_datetime(forDate, format="%m/%d/%Y")
     day_int = date_obj.weekday() + 1
     return day_int
