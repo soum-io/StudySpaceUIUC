@@ -258,6 +258,7 @@ def results_view(request, *args, **kwargs):
         #str(forTimeInt)'''
         avg_count = 0.0
         for record in students_predicted_raw:
+            print(record)
             avg_count += record.count
 
         if len(students_predicted_raw) != 0:
