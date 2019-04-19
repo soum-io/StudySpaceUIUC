@@ -70,19 +70,16 @@ def search_view(request, *args, **kwargs):
         signup_request = "location" in request.POST # this is only a field in the signup form
 
         if("UpdatedAddress" in request.POST): # coming from updated address
+            print("updating raw address")
             updatedAddress = request.POST["UpdatedAddress"]
             student_username = logged_in["username"]
             print(student_username)
             print(updatedAddress)
-            #update_query = 'UPDATE pages_Student SET "mainAddress" = %s WHERE "username" = %s;'
-            #with connection.cursor() as cursor:
-            #    cursor.execute(update_query, (updatedAddress, student_username))
-            student_to_update = Student.objects.get(username=student_username)
-            student_to_update.mainAddress = updatedAddress
-            student_to_update.save()
+            update_query = 'UPDATE pages_Student SET "mainAddress" = %s WHERE "username" = %s;'
+            with connection.cursor() as cursor:
+                cursor.execute(update_query, (updatedAddress, student_username))
             default_address = updatedAddress
             # TODO update student's address with student_username
-
             return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
 
         elif(signup_request): # coming from signup
@@ -122,9 +119,7 @@ def search_view(request, *args, **kwargs):
             matches = False
             default_address = ""
             try:
-                #temp_student = Student.objects.raw('SELECT * FROM pages_Student WHERE "username" = %s', email)
-                temp_student = Student.objects.get(username=email)
-                print("student", temp_student)
+                temp_student = Student.objects.raw('SELECT * FROM pages_Student WHERE "username" = %s', [email])[0]
                 if check_password(password, temp_student.passwordHash):
                     print("Success Match")
                     matches = True
@@ -143,10 +138,12 @@ def search_view(request, *args, **kwargs):
     else: # get from anon or entering another search from results page user
         default_address = ""
         try:
-            #curr_user = Student.objects.raw('SELECT * FROM pages_Student WHERE "username" = %s', logged_in["username"])
-            curr_user = Student.objects.get(username=logged_in["username"])
-            default_address = curr_user.mainAddress
-            curr_user.save()
+            curr_user = Student.objects.raw('SELECT * FROM pages_Student WHERE "username" = %s', [logged_in["username"]])
+            if len(curr_user) != 0:
+                curr_user = curr_user[0]
+                default_address = curr_user.mainAddress
+            else:
+                default_address = ""
         except ObjectDoesNotExist:
             default_address = ""
 
@@ -155,7 +152,6 @@ def search_view(request, *args, **kwargs):
 
 def get_google_maps_distances(origin):
     library_df = pd.DataFrame(list(Library.objects.all().values('libName', 'libAddress', 'reservationLink')))
-    #comment these out once all libraries are supported
 
     gmaps = googlemaps.Client(key=API_key)
     destinations = list(library_df['libAddress'])
@@ -184,16 +180,11 @@ def get_google_maps_distances(origin):
     return library_df
 
 def get_open_sections_func(dayOfWeek, forTimeInt, environment):
-    #get_open_sections = 'SELECT * FROM pages_FloorSection'
-    #get_open_sections = 'SELECT * FROM pages_FloorSection as FS, pages_hoursOfOp as hours WHERE "hours.libName" = "FS.libname" and "pages_hoursOfOp.dayOfWeek" = %s and "pages_hoursOfOp.openTime" <= %s and "pages_hoursOfOp.closeTime" >= %s and "pages_FloorSection.studyEnv" = %s'
     get_open_sections = 'SELECT * FROM pages_FloorSection as FS, pages_hoursOfOp as hours WHERE hours."dayOfWeek" = %s and hours."libName" = FS."libName" and hours."openTime" <= %s and hours."closeTime" >= %s and FS."studyEnv" = %s'
-#    open_sections = FloorSection.objects.raw(get_open_sections, (str(dayOfWeek), str(forTimeInt), str(forTimeInt), environment))
     with connection.cursor() as cursor:
         cursor.execute(get_open_sections, (str(dayOfWeek), str(forTimeInt), str(forTimeInt), environment))
         open_sections = cursor.fetchall()
     return open_sections
-
-
 
 def results_view(request, *args, **kwargs):
     global logged_in
@@ -203,16 +194,12 @@ def results_view(request, *args, **kwargs):
         if("UpdatedAddress" in request.POST): # coming from updated address
             updatedAddress = request.POST["UpdatedAddress"]
             student_username = logged_in["username"]
-            print(student_username)
-            print(updatedAddress)
-            student_to_update = Student.objects.get(username=student_username)
-            student_to_update.mainAddress = updatedAddress
-            student_to_update.save()
+            update_query = 'UPDATE pages_Student SET "mainAddress" = %s WHERE "username" = %s;'
+            with connection.cursor() as cursor:
+                cursor.execute(update_query, (updatedAddress, student_username))
             default_address = updatedAddress
             # TODO update student's address with student_username
             return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
-
-
 
     print(request.GET)
     # get search form data
@@ -241,10 +228,8 @@ def results_view(request, *args, **kwargs):
         if row["Distance"] < min_distance:
             min_distance = row["Distance"]
 
-
     confidences = {}
     spot_confidences = {}
-    print(open_sections)
     #get percent fulls for each floor_section -> then calc confidence
     for floor_section in open_sections:
         max_cap = floor_section[4]
@@ -253,23 +238,17 @@ def results_view(request, *args, **kwargs):
         section = floor_section[3]
 
         get_current_students = list(recordData.objects.filter().aggregate(avg_count = Avg('count')).values())
-        #print(get_current_students)
         get_current_students_raw = 'SELECT AVG(count) as avg, pages_recordData."recordID" FROM pages_recordData WHERE "libName" = %s AND "floorNum" = %s AND "section" = %s AND "dayOfWeek" = %s AND time = %s GROUP BY pages_recordData."recordID";'
-        # AND time = %s
-        #str(forTimeInt)
         students_predicted_raw = recordData.objects.raw(get_current_students_raw, [libName, str(floorNum), section, str(dayOfWeek), str(forTimeInt)])
-        #str(forTimeInt)'''
+
         avg_count = 0.0
         for record in students_predicted_raw:
-            print(record)
             avg_count += record.count
 
         if len(students_predicted_raw) != 0:
             avg_count /= len(students_predicted_raw)
-        print(avg_count)
-        print(max_cap)
+
         percent_full = avg_count/max_cap
-        print(str(percent_full))
         #get to end confidence from percent full and distrank
         dist_weight = 0.25
         capacity_weight = 1 - dist_weight
@@ -283,11 +262,8 @@ def results_view(request, *args, **kwargs):
         #lib_row = library_df[library_df["libName"] == libName]
         #calculate %further away this library is from closest one
         d = library_df.loc[library_df['libName'] == libName, 'Distance'].iloc[0]
-        print(libName, str(d))
-        print("min distance", min_distance)
 
         percent_distance = 1 - (d - min_distance)/d
-        print(libName, percent_distance)
 
         #distrank = library_df.loc[library_df['libName'] == libName, 'distrank'].iloc[0]
         #print(distrank)
@@ -295,11 +271,9 @@ def results_view(request, *args, **kwargs):
         #each floor section gets %full*full_weight
         #confidence = dist_weight*(6-distrank)/5 + capacity_weight*(1-percent_full)
         confidence = percent_distance*dist_weight + capacity_weight*(1 - percent_full)
-        print(confidence)
         confidences[floor_section] = confidence
         spot_confidences[floor_section] = 1 - percent_full
 
-    print(confidences)
     sorted_confidences = sorted(confidences.items(), key=operator.itemgetter(1), reverse = True)
     # TODO: Use search information to get reccomendations. Each reccomendation need to contain the following information:
     # 1. library abbreviation ("UGL","GG","MainLib", "Chem", "Aces") -> "lib"
@@ -360,11 +334,9 @@ def update_view(request, *args, **kwargs):
         if("UpdatedAddress" in request.POST): # coming from updated address
             updatedAddress = request.POST["UpdatedAddress"]
             student_username = logged_in["username"]
-            print(student_username)
-            print(updatedAddress)
-            student_to_update = Student.objects.get(username=student_username)
-            student_to_update.mainAddress = updatedAddress
-            student_to_update.save()
+            update_query = 'UPDATE pages_Student SET "mainAddress" = %s WHERE "username" = %s;'
+            with connection.cursor() as cursor:
+                cursor.execute(update_query, (updatedAddress, student_username))
             default_address = updatedAddress
             # TODO update student's address with student_username
             return render(request, "search/search.html", {"logged_in":logged_in, "default_address":default_address})
@@ -483,8 +455,14 @@ def update_view(request, *args, **kwargs):
     is_admin = False
     #get username for logged in individual
     try:
-        curr_user = Student.objects.get(username=logged_in["username"])
-        is_admin = curr_user.isAdmin
+        curr_user = Student.objects.raw('SELECT * FROM pages_Student WHERE "username" = %s', [logged_in["username"]])
+        if len(curr_user) != 0:
+            curr_user = curr_user[0]
+            is_admin = curr_user.isAdmin
+        else:
+            default_address = ""
+            isAdmin = False
+
     except ObjectDoesNotExist:
         is_admin = False
 
@@ -495,7 +473,6 @@ def update_view(request, *args, **kwargs):
         lib_vals = Library.objects.values()
         for lib in lib_vals:
             library_data[lib['libName']] = lib
-        print(library_data)
 
         # TODO Fill Floor data from database. NOTE: The names should be libname#. Has to do with sorting.
         floor_data = {}
@@ -507,7 +484,6 @@ def update_view(request, *args, **kwargs):
             key = floor_section['libName'] + str(floor_section['floorNum']) + str(section_counts[floor_section["libName"]])
             floor_data[key] = floor_section
             section_counts[floor_section["libName"]]+=1
-        print(floor_data)
 
         # TODO Fill Hours of Operation data from database. The names should be libname#. Has to do with sorting.
         #1 = Sunday, 7 = Saturday
@@ -516,39 +492,13 @@ def update_view(request, *args, **kwargs):
         for hour in hoursOfOp_vals:
             key = hour['libName'] + str(hour['dayOfWeek'])
             hours_data[key] = hour
-        print(hours_data)
-
-
-
-
         # TODO Fill record data from database. The names should be libname#. Has to do with sorting.
-        record_data = {
-            "grainger0": {
-                "libName" : "Grainger",
-                "floorNum" : 2,
-                "section" : "2_A",
-                "count" : 25,
-                "dayOfWeek": 0,
-                "time": 12,
-                "recordID" : 1
-            },
-            "grainger1": {
-                "libName" : "Grainger",
-                "floorNum" : 2,
-                "section" : "2_A",
-                "count" : 30,
-                "dayOfWeek": 3,
-                "time": 12,
-                "recordID" : 2
-            }
-        }
 
         pass_data = {
             "logged_in": logged_in,
             "library_data" : library_data,
             "floor_data": floor_data,
             "hoursOfOp": hours_data,
-            "record_data" : record_data
         }
         return render(request, "update/update.html", pass_data)
     else: # not allowed to be here!
