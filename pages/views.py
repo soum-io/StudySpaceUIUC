@@ -12,6 +12,7 @@ from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
 import datetime
 from django.db.models import Avg
+import sys
 
 
 # how to pass to page to page if user is logged in or not. This is really bad
@@ -179,12 +180,6 @@ def get_open_sections_func(dayOfWeek, forTimeInt, environment):
     #get_open_sections = 'SELECT * FROM pages_FloorSection as FS, pages_hoursOfOp as hours WHERE "hours.libName" = "FS.libname" and "pages_hoursOfOp.dayOfWeek" = %s and "pages_hoursOfOp.openTime" <= %s and "pages_hoursOfOp.closeTime" >= %s and "pages_FloorSection.studyEnv" = %s'
     get_open_sections = 'SELECT * FROM pages_FloorSection as FS, pages_hoursOfOp as hours WHERE hours."dayOfWeek" = %s and hours."libName" = FS."libName" and hours."openTime" <= %s and hours."closeTime" >= %s and FS."studyEnv" = %s'
 #    open_sections = FloorSection.objects.raw(get_open_sections, (str(dayOfWeek), str(forTimeInt), str(forTimeInt), environment))
-    if (environment == "Group Study"):
-        environment = "collaborative"
-    elif(environment == "Quiet Closed Study" or environment == "Quiet Open Study"):
-        environment = "quiet"
-    else:
-        environment = "EWS"
     with connection.cursor() as cursor:
         cursor.execute(get_open_sections, (str(dayOfWeek), str(forTimeInt), str(forTimeInt), environment))
         open_sections = cursor.fetchall()
@@ -222,6 +217,7 @@ def results_view(request, *args, **kwargs):
     print("time: " + str(forTimeInt))
     environment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", or "Group Study"
 
+    #if query is invalid redirect back to serach page
     if location == "" or groupSize == "" or forDate == "" or forTime == "" or environment == "":
         default_address = ""
         if location != "":
@@ -230,12 +226,16 @@ def results_view(request, *args, **kwargs):
 
     library_df = get_google_maps_distances(location)
     open_sections = get_open_sections_func(dayOfWeek, forTimeInt, environment)
-
-
-
+    min_distance = sys.float_info.max
+    for idx, row in library_df.iterrows():
+        print(row["libName"], row["Distance"])
+        if row["Distance"] < min_distance:
+            min_distance = row["Distance"]
 
 
     confidences = {}
+    spot_confidences = {}
+    print(open_sections)
     #get percent fulls for each floor_section -> then calc confidence
     for floor_section in open_sections:
         max_cap = floor_section[4]
@@ -244,13 +244,23 @@ def results_view(request, *args, **kwargs):
         section = floor_section[3]
 
         get_current_students = list(recordData.objects.filter().aggregate(avg_count = Avg('count')).values())
-        #get_current_students = "SELECT AVG(count) as avg, 'pages_recordData.recordID' FROM pages_recordData WHERE 'libName' = %s, 'floorNum' = %s, 'section' = %s, 'dayOfWeek' = %s,'time' = %s GROUP BY libName, floorNum, section, dayOfWeek, time;"
-        #students_predicted = recordData.objects.raw(get_current_students, (libName, str(floorNum), section, day, str(forTimeInt)))
+        #print(get_current_students)
+        get_current_students_raw = 'SELECT AVG(count) as avg, pages_recordData."recordID" FROM pages_recordData WHERE "libName" = %s AND "floorNum" = %s AND "section" = %s AND "dayOfWeek" = %s AND time = %s GROUP BY pages_recordData."recordID";'
+        # AND time = %s
+        #str(forTimeInt)
+        students_predicted_raw = recordData.objects.raw(get_current_students_raw, [libName, str(floorNum), section, str(dayOfWeek), str(forTimeInt)])
+        #str(forTimeInt)'''
+        avg_count = 0.0
+        for record in students_predicted_raw:
+            avg_count += record.count
 
-        percent_full = get_current_students[0]/max_cap
+        if len(students_predicted_raw) != 0:
+            avg_count /= len(students_predicted_raw)
+        percent_full = avg_count/max_cap
+        #print(str(percent_full))
         #get to end confidence from percent full and distrank
-        dist_weight = 0.50
-        capacity_weight = 1-dist_weight
+        dist_weight = 0.25
+        capacity_weight = 1 - dist_weight
         #25% distance = distweight
         # if closest library, all floorsections get distweight from distance
         # second closest gets 0.8*distweight
@@ -258,12 +268,25 @@ def results_view(request, *args, **kwargs):
         # fourth = 0.4*distweight
         # fifth = 0.2*distweight
         # effectively = (6-distrank)*distweight
-        distrank = library_df.loc[library_df['libName'] == libName, 'distrank'].iloc[0]
+        #lib_row = library_df[library_df["libName"] == libName]
+        #calculate %further away this library is from closest one
+        d = library_df.loc[library_df['libName'] == libName, 'Distance'].iloc[0]
+        #print(libName, str(d))
+
+        percent_distance = 1 - (d - min_distance)/min_distance
+        #print(libName, percent_distance)
+
+        #distrank = library_df.loc[library_df['libName'] == libName, 'distrank'].iloc[0]
+        #print(distrank)
         #75% percent_full = full_weight
         #each floor section gets %full*full_weight
-        confidence = dist_weight*(6-distrank)/5 + capacity_weight*(1-percent_full)
+        #confidence = dist_weight*(6-distrank)/5 + capacity_weight*(1-percent_full)
+        confidence = percent_distance*dist_weight + capacity_weight*(1 - percent_full)
+        #print(confidence)
         confidences[floor_section] = confidence
+        spot_confidences[floor_section] = 1 - percent_full
 
+    print(confidences)
     sorted_confidences = sorted(confidences.items(), key=operator.itemgetter(1), reverse = True)
     # TODO: Use search information to get reccomendations. Each reccomendation need to contain the following information:
     # 1. library abbreviation ("UGL","GG","MainLib", "Chem", "Aces") -> "lib"
@@ -281,6 +304,8 @@ def results_view(request, *args, **kwargs):
     res = "result"
     count = 1
     for section, confidence in sorted_confidences:
+        if count == 6:
+            break
         result = {}
         if section[1] == "Grainger":
             result["lib"] = "GG"
@@ -290,23 +315,24 @@ def results_view(request, *args, **kwargs):
             result["lib"] = "MainLib"
         elif section[1] == "Chemistry Library":
             result["lib"] = "Chem"
-        elif section[1] == "ACES":
+        elif section[1] == "ACES Library":
             result["lib"] = "Aces"
 
-        result["conf"] = confidence
+        result["conf"] = round(100*spot_confidences[section], 2)
         result["floor"] = section[2]
         result["section"] = section[3]
         result["dist"] = library_df[library_df['libName'] == section[1]].iloc[0]['Distance Words']
         # TODO make sure this is the correct rank based on what ever alg'm we use
         result["rank"] = str(count)
         if environment == "Quiet Open Study" or environment == "Quiet Closed Study":
-            result["quiet"] = True
-        else:
             result["quiet"] = False
+        else:
+            result["quiet"] = True
         result["link"] = library_df[library_df['libName'] == section[1]].iloc[0]['reservationLink']
         allResults[res + str(count)] = result
         count+=1
 
+    print(allResults)
     pass_data = {
         "logged_in" : logged_in,
         "allResults": allResults
