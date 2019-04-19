@@ -221,6 +221,7 @@ def results_view(request, *args, **kwargs):
     forTime = request.GET["forTime"] # format is "01:00 AM"
     forTimeInt = convertTime(forTime) # int version of requested time. so "05:30 PM" becomes 1730.
     print("time: " + str(forTimeInt))
+    print("Day of week: " + str(dayOfWeek))
     environment = request.GET["enviroment"] # will either be "Quiet Open Study", "Quiet Closed Study", or "Group Study"
 
     #if query is invalid redirect back to serach page
