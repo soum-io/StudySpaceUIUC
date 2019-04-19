@@ -204,7 +204,8 @@ def results_view(request, *args, **kwargs):
     print(request.GET)
     # get search form data
     location = request.GET["location"] # address as string address, not coordinates
-    groupSize = request.GET["groupSize"] # will be a digit in string format
+    # groupSize = request.GET["groupSize"] # will be a digit in string format
+    groupSize = 1
     forDate = request.GET["forDate"] # format is "mm/dd/yyyy"
     dayOfWeek = getDay(forDate)# turns date into day of week int 1 - 7 with 1 = "Monday"
     forTime = request.GET["forTime"] # format is "01:00 AM"
