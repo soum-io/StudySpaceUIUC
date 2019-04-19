@@ -58,7 +58,7 @@ function createElement(lib,floor,section,distance,isquiet,chance,rank,link){
 	}else if (lib == "Aces"){
 		console.log('Aces')
 	    card_template.getElementById("Library_image1").src = src="/static/img/LibraryImages/Aces/Aces1.jpg";
-	    card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/Aces/Aces1.jpg";
+	    card_template.getElementById("Library_image2").src = src="/static/img/LibraryImages/Aces/Aces2.jpg";
 	    card_template.getElementById("reference_item").id = 'Aces';
 	    card_template.getElementById("LibraryNameText").innerText = "ACES Library";
 		registered = true
@@ -215,7 +215,37 @@ function library_Sort(){
 		var aces = [];
 
 		//Condition is useless because I change it to once user click
-		//library filter, automatically turn on the chance filter
+		//library filter, automatically turn on the chance filt
+
+
+			for(var j = 0; j < x.length; j++){
+				if(x[j].getElementsByClassName('libraryname')[0].innerText == "ACES Library"){
+					aces.push(x[j]);
+				}
+			}
+			if(aces.length != 0){
+				aces = bubble_sort_helper(aces);
+				for(var m = 0; m < aces.length; m++){
+					y.push(aces[m]);
+				}
+			}else{
+				console.log("no ACES Library found");
+			}
+
+			for(var j = 0; j < x.length; j++){
+				if(x[j].getElementsByClassName('libraryname')[0].innerText == "Chemistry Library"){
+					chem.push(x[j]);
+				}
+			}
+			if(chem.length != 0){
+				chem = bubble_sort_helper(chem);
+				for(var m = 0; m < chem.length; m++){
+					y.push(chem[m]);
+				}
+			}else{
+				console.log("no Chemistry Library found");
+			}
+
 			for(var m = 0; m < x.length; m++){
 				if(x[m].getElementsByClassName('libraryname')[0].innerText == "Grainger Library"){
 					gg.push(x[m]);
@@ -260,33 +290,7 @@ function library_Sort(){
 				console.log("no Undergraduate Library found");
 			}
 
-			for(var j = 0; j < x.length; j++){
-				if(x[j].getElementsByClassName('libraryname')[0].innerText == "Chemistry Library"){
-					chem.push(x[j]);
-				}
-			}
-			if(chem.length != 0){
-				chem = bubble_sort_helper(chem);
-				for(var m = 0; m < chem.length; m++){
-					y.push(chem[m]);
-				}
-			}else{
-				console.log("no Chemistry Library found");
-			}
 
-			for(var j = 0; j < x.length; j++){
-				if(x[j].getElementsByClassName('libraryname')[0].innerText == "ACES Library"){
-					aces.push(x[j]);
-				}
-			}
-			if(aces.length != 0){
-				aces = bubble_sort_helper(aces);
-				for(var m = 0; m < aces.length; m++){
-					y.push(aces[m]);
-				}
-			}else{
-				console.log("no ACES Library found");
-			}
 
 
 		//Clear all Children
