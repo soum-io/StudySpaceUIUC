@@ -292,8 +292,6 @@ def results_view(request, *args, **kwargs):
     res = "result"
     count = 1
     for section, confidence in sorted_confidences:
-        if count == 6:
-            break
         result = {}
         if section[1] == "Grainger":
             result["lib"] = "GG"
