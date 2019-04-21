@@ -224,10 +224,13 @@ def results_view(request, *args, **kwargs):
     library_df = get_google_maps_distances(location)
     open_sections = get_open_sections_func(dayOfWeek, forTimeInt, environment)
     min_distance = sys.float_info.max
+    max_distance = sys.float_info.min
     for idx, row in library_df.iterrows():
         print(row["libName"], row["Distance"])
         if row["Distance"] < min_distance:
             min_distance = row["Distance"]
+        if row["Distance"] > max_distance:
+            max_distance = row["Distance"]
 
     confidences = {}
     spot_confidences = {}
@@ -251,7 +254,11 @@ def results_view(request, *args, **kwargs):
 
         percent_full = avg_count/max_cap
         #get to end confidence from percent full and distrank
-        dist_weight = 0.25
+        dist_weight = (max_distance - min_distance) / max_distance
+        print("dist_weight: ", dist_weight)
+        if dist_weight > 0.25:
+            dist_weight = 0.25
+        print("adjusted_distweight: ", dist_weight)
         capacity_weight = 1 - dist_weight
         #25% distance = distweight
         # if closest library, all floorsections get distweight from distance
